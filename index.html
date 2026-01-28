@@ -1,0 +1,1352 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2026 국민취업지원제도 통합 상담 시스템 (V22_Corrected)</title>
+    <style>
+        :root {
+            --brand-color: #004e92;
+            --brand-accent: #000428;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+            --danger-color: #c0392b;
+            --kakao-color: #fee500;
+            --bg-light: #f4f6f9;
+            --text-dark: #333;
+        }
+        body { font-family: 'Pretendard', 'Malgun Gothic', sans-serif; margin: 0; display: flex; height: 100vh; background-color: var(--bg-light); color: var(--text-dark); }
+        
+        /* Sidebar */
+        .sidebar { width: 300px; background: linear-gradient(180deg, var(--brand-accent) 0%, var(--brand-color) 100%); color: white; display: flex; flex-direction: column; padding: 25px 0; box-shadow: 4px 0 15px rgba(0,0,0,0.15); z-index: 10; }
+        .sidebar-header { padding: 0 25px 25px; border-bottom: 1px solid rgba(255,255,255,0.15); margin-bottom: 15px; }
+        .company-name { font-size: 1.5rem; font-weight: 800; display: block; margin-bottom: 8px; letter-spacing: -0.5px; }
+        .company-sub { font-size: 0.9rem; opacity: 0.8; font-weight: 300; color: #dbeafe; }
+        .nav-item { padding: 16px 30px; cursor: pointer; transition: all 0.2s; border-left: 5px solid transparent; font-size: 1rem; display: flex; align-items: center; color: white; text-decoration: none; opacity: 0.9; }
+        .nav-item:hover, .nav-item.active { background-color: rgba(255,255,255,0.15); border-left-color: #fff; font-weight: bold; opacity: 1; }
+        .nav-icon { margin-right: 12px; font-size: 1.2rem; }
+        .nav-external { background: rgba(255,255,255,0.1); margin: 15px 20px; border-radius: 8px; border: 1px dashed rgba(255,255,255,0.3); justify-content: center; font-size: 0.95rem; }
+        .nav-external:hover { background: var(--success-color); border-style: solid; border-color: transparent; }
+        .footer-warning { margin-top: auto; padding: 25px; background: rgba(0,0,0,0.25); font-size: 0.75rem; color: #bdc3c7; text-align: center; line-height: 1.6; }
+
+        /* Main Content */
+        .main-content { flex: 1; padding: 50px; overflow-y: auto; background-color: #f8f9fa; }
+        .container { max-width: 1100px; margin: 0 auto; }
+        
+        /* Cards */
+        .card { background: white; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.06); padding: 40px; margin-bottom: 30px; border: 1px solid #e1e4e8; }
+        .card-header { font-size: 1.6rem; font-weight: 800; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 3px solid var(--brand-color); color: var(--brand-color); display: flex; justify-content: space-between; align-items: center; }
+        
+        /* Typography & Elements */
+        .alert-box { background-color: #fff8e1; border: 1px solid #ffe0b2; color: #8d6e63; padding: 20px; border-radius: 10px; margin-bottom: 30px; display: flex; align-items: flex-start; line-height: 1.6; }
+        .form-group { margin-bottom: 25px; }
+        .form-label { display: block; font-weight: 700; margin-bottom: 10px; color: #2c3e50; font-size: 1.1rem; }
+        .form-control, .form-select { width: 100%; padding: 15px; border: 1px solid #ced4da; border-radius: 10px; font-size: 1.05rem; transition: border-color 0.2s; }
+        .form-control:focus, .form-select:focus { border-color: var(--brand-color); outline: none; }
+        .help-text { font-size: 0.95rem; color: #555; margin-top: 10px; padding: 15px; background-color: #f1f3f5; border-radius: 8px; border-left: 5px solid #adb5bd; line-height: 1.6; }
+        
+        /* Tables */
+        .comp-table { width: 100%; border-collapse: separate; border-spacing: 0; border-radius: 12px; overflow: hidden; border: 1px solid #e9ecef; }
+        .comp-table th, .comp-table td { padding: 18px; text-align: center; vertical-align: middle; border-bottom: 1px solid #e9ecef; }
+        .comp-table th { background-color: #eef2f6; color: var(--brand-color); font-weight: 800; font-size: 1.1rem; border-right: 1px solid #e9ecef; }
+        .comp-table td { font-size: 1rem; line-height: 1.6; border-right: 1px solid #e9ecef; }
+        .comp-table tr:last-child td { border-bottom: none; }
+        .comp-table th:last-child, .comp-table td:last-child { border-right: none; }
+        .highlight-text { font-weight: bold; padding: 2px 6px; border-radius: 4px; display: inline-block; margin-top: 4px;}
+        .badge-youth { background: #3498db; color: white; padding: 3px 8px; border-radius: 20px; font-size: 0.85rem; font-weight: bold; }
+
+        /* Service List */
+        .service-list { display: grid; grid-template-columns: 1fr; gap: 20px; }
+        .service-item { background: #fff; border: 1px solid #e9ecef; padding: 30px; border-radius: 15px; display: flex; align-items: flex-start; transition: all 0.3s; position: relative; overflow: hidden; }
+        .service-item::before { content: ''; position: absolute; left: 0; top: 0; width: 5px; height: 100%; background: #e9ecef; transition: 0.3s; }
+        .service-item:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0,0,0,0.1); border-color: white; }
+        .service-item:hover::before { background: var(--brand-color); }
+        .service-icon-box { background: #f0f4f8; color: var(--brand-color); width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; margin-right: 25px; flex-shrink: 0; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+        .service-content h4 { margin: 0 0 10px 0; font-size: 1.25rem; color: #2c3e50; font-weight: 800; letter-spacing: -0.5px; }
+        .service-content p { margin: 0; color: #555; font-size: 1.05rem; line-height: 1.7; }
+
+        /* FAQ Accordion Grid */
+        .faq-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        @media (max-width: 900px) { .faq-grid { grid-template-columns: 1fr; } }
+        .accordion-item { border: 1px solid #e9ecef; border-radius: 10px; overflow: hidden; background: white; transition: box-shadow 0.2s; }
+        .accordion-item:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        .accordion-header { padding: 18px 25px; cursor: pointer; font-weight: 700; display: flex; justify-content: space-between; align-items: center; color: #495057; font-size: 1.05rem; background: #fff; }
+        .accordion-header:hover { color: var(--brand-color); background: #f8f9fa; }
+        .accordion-content { display: none; padding: 25px; background: #fcfcfc; border-top: 1px solid #eee; line-height: 1.7; color: #333; font-size: 1rem; }
+        .accordion-header.active { background: #f1f3f5; color: var(--brand-color); border-bottom: 1px solid #eee; }
+        .accordion-header.active + .accordion-content { display: block; }
+        .q-mark { color: var(--brand-color); margin-right: 10px; font-weight: 900; }
+
+        /* Buttons & Results */
+        .btn { background: var(--brand-color); color: white; border: none; padding: 18px; border-radius: 12px; cursor: pointer; font-size: 1.2rem; width: 100%; font-weight: 800; transition: all 0.2s; box-shadow: 0 4px 10px rgba(0,78,146,0.3); }
+        .btn:hover { background: #003d73; transform: translateY(-2px); box-shadow: 0 6px 15px rgba(0,78,146,0.4); }
+        .result-box { display: none; padding: 30px; margin-top: 30px; border-radius: 12px; animation: slideDown 0.4s ease-out; }
+        .res-success { background: #e8f5e9; border: 2px solid #81c784; color: #2e7d32; }
+        .res-fail { background: #ffebee; border: 2px solid #e57373; color: #c62828; }
+        .res-info { background: #e3f2fd; border: 2px solid #64b5f6; color: #1565c0; }
+
+        /* Branch Result */
+        .branch-result { margin-top: 25px; padding: 30px; background: #fff9db; border: 2px solid #ffe066; border-radius: 12px; display: none; }
+        .action-buttons { display: flex; gap: 15px; margin-top: 20px; }
+        .map-link, .kakao-link { flex: 1; padding: 15px; border-radius: 8px; font-weight: bold; text-align: center; text-decoration: none; transition: 0.2s; display: flex; align-items: center; justify-content: center; font-size: 1.05rem; }
+        .map-link { background: #27ae60; color: white; box-shadow: 0 4px 6px rgba(39,174,96,0.2); }
+        .map-link:hover { background: #219150; transform: translateY(-2px); }
+        .kakao-link { background: var(--kakao-color); color: #3c1e1e; box-shadow: 0 4px 6px rgba(254,229,0,0.4); }
+        .kakao-link:hover { background: #ffd700; transform: translateY(-2px); }
+
+        /* Modals */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
+        .modal-content { background: white; padding: 50px; border-radius: 20px; width: 900px; max-height: 90vh; overflow-y: auto; position: relative; box-shadow: 0 20px 50px rgba(0,0,0,0.3); }
+        .close-btn { position: absolute; top: 30px; right: 30px; font-size: 2rem; cursor: pointer; color: #adb5bd; transition: 0.2s; }
+        .close-btn:hover { color: var(--danger-color); transform: rotate(90deg); }
+        .modal-title { font-size: 1.8rem; font-weight: 800; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 3px solid var(--bg-light); color: var(--brand-color); }
+        
+        /* Spec List Grid */
+        .spec-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        @media (max-width: 800px) { .spec-grid { grid-template-columns: 1fr; } }
+        .spec-card { border: 1px solid #e9ecef; border-radius: 10px; padding: 20px; background: #fff; transition: 0.2s; }
+        .spec-card:hover { border-color: var(--brand-color); box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+        .spec-num { display: inline-block; background: var(--brand-color); color: white; width: 28px; height: 28px; border-radius: 50%; text-align: center; line-height: 28px; font-weight: bold; font-size: 0.9rem; margin-right: 10px; }
+        .spec-head { font-weight: 800; color: #2c3e50; font-size: 1.1rem; margin-bottom: 8px; }
+        .spec-body { font-size: 0.95rem; color: #555; line-height: 1.5; }
+
+        @keyframes slideDown { from { opacity:0; transform:translateY(-10px); } to { opacity:1; transform:translateY(0); } }
+        
+        /* Checkbox Grid */
+        .checkbox-container { background: #f8f9fa; padding: 20px; border-radius: 10px; border: 1px solid #e9ecef; }
+        .checkbox-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+        .checkbox-item { background: white; border: 1px solid #ced4da; padding: 12px; border-radius: 8px; cursor: pointer; font-size: 0.95rem; display: flex; align-items: center; transition: 0.2s; }
+        .checkbox-item:hover { border-color: var(--brand-color); background: #eef2f6; }
+        .checkbox-item input { margin-right: 10px; transform: scale(1.2); }
+    
+/* ===== Readability upgrade (V22.1 UI refresh) ===== */
+:root{
+  --surface: #ffffff;
+  --surface-2: #f6f8fb;
+  --border: #e6eaf0;
+  --radius-lg: 18px;
+}
+
+/* Global */
+body{ line-height: 1.55; }
+.main-content{ padding: 36px; }
+.container{ max-width: 1160px; }
+
+/* Responsive spacing */
+@media (max-width: 1100px){
+  .sidebar{ width: 260px; }
+  .main-content{ padding: 24px; }
+  .card{ padding: 28px; }
+}
+@media (max-width: 820px){
+  body{ flex-direction: column; height: auto; min-height: 100vh; }
+  .sidebar{ width: 100%; padding: 16px 0; box-shadow: none; position: sticky; top: 0; }
+  .sidebar-header{ padding: 0 18px 14px; margin-bottom: 10px; }
+  .nav-item{ padding: 12px 18px; }
+  .main-content{ padding: 18px; }
+  .card{ padding: 20px; border-radius: 14px; }
+  .card-header{ font-size: 1.35rem; flex-direction: column; align-items: flex-start; gap: 8px; }
+}
+
+/* Cards */
+.card{ border-radius: var(--radius-lg); background: var(--surface); border-color: var(--border); }
+.card-header{ line-height: 1.25; }
+.alert-box{ gap: 14px; }
+.help-text{ border-left-color: var(--brand-color); background: var(--surface-2); }
+
+/* Inputs */
+.form-control, .form-select{ background: #fff; }
+.form-control::placeholder{ color: #9aa5b1; }
+
+/* Address 3-column grid (was referenced but not defined) */
+.grid-3{ display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+.form-input{
+  width: 100%;
+  padding: 15px;
+  border: 1px solid #ced4da;
+  border-radius: 10px;
+  font-size: 1.05rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  background: #fff;
+}
+.form-input:focus{
+  border-color: var(--brand-color);
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(0, 78, 146, 0.12);
+}
+@media (max-width: 820px){
+  .grid-3{ grid-template-columns: 1fr; }
+}
+
+/* Checkbox layout readability */
+.checkbox-grid{ grid-template-columns: repeat(2, 1fr); gap: 12px; }
+.checkbox-item{ line-height: 1.35; }
+@media (min-width: 1180px){
+  .checkbox-grid{ grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 520px){
+  .checkbox-grid{ grid-template-columns: 1fr; }
+}
+
+/* Tables */
+.comp-table th, .comp-table td{ padding: 16px; }
+.comp-table tbody tr:nth-child(even) td{ background: #fbfcfe; }
+
+/* Secondary (outlined) buttons */
+.btn.btn-outline{
+  background: #fff !important;
+  color: var(--brand-color) !important;
+  border: 2px solid rgba(0,78,146,0.22) !important;
+  box-shadow: none !important;
+  font-size: 1.02rem !important;
+  padding: 14px 16px !important;
+}
+.btn.btn-outline:hover{
+  background: rgba(0,78,146,0.06) !important;
+  transform: translateY(-1px) !important;
+}
+
+/* Modal readability */
+.modal-content{ border-radius: 20px; }
+.modal-title{ line-height: 1.25; }
+
+/* Reduce motion for accessibility */
+@media (prefers-reduced-motion: reduce){
+  *{ animation: none !important; transition: none !important; }
+}
+
+
+/* Center buttons inside result */
+.btn.btn-small{
+  width: auto;
+  padding: 10px 12px;
+  font-size: 0.95rem;
+  border-radius: 10px;
+  box-shadow: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+.btn.btn-small:hover{ transform: translateY(-1px); }
+.btn.btn-kakao{
+  background: var(--kakao-color);
+  color: #3c1e1e;
+  box-shadow: 0 4px 6px rgba(254,229,0,0.35);
+}
+.btn.btn-kakao:hover{ background:#ffd700; }
+
+
+/* ===== Result warning banner (Education/Status) ===== */
+.warn-banner{
+  margin-top: 18px;
+  margin-bottom: 14px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  border: 1px solid #ddd;
+  line-height: 1.55;
+}
+.warn-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+.warn-actions{
+  display:flex;
+  gap:8px;
+  flex-wrap: wrap;
+}
+.warn-student{ background:#ffebee; border-color:#ef9a9a; color:#b71c1c; }  /* 재학생=빨강 */
+.warn-expected{ background:#fff8e1; border-color:#ffe082; color:#8d6e63; } /* 졸업예정=노랑 */
+.warn-info{ background:#e3f2fd; border-color:#90caf9; color:#0d47a1; }     /* 그 외=파랑 */
+
+.faq-flash{ animation: faqFlash 1.2s ease; }
+@keyframes faqFlash{
+  0%{ box-shadow: 0 0 0 0 rgba(0,0,0,0); }
+  30%{ box-shadow: 0 0 0 6px rgba(0,0,0,0.08); }
+  100%{ box-shadow: 0 0 0 0 rgba(0,0,0,0); }
+}
+
+</style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <span class="company-name">(주)좋은일자리</span>
+            <span class="company-sub">2026 국민취업지원제도<br>통합 상담 솔루션</span>
+        </div>
+        <a href="#" class="nav-item active" onclick="showTab('calculator')"><span class="nav-icon">📊</span> 자격 판정기</a>
+        <a href="#" class="nav-item" onclick="showTab('comparison')"><span class="nav-icon">⚖️</span> 유형 비교 & 서비스</a>
+        <a href="#" class="nav-item" onclick="showTab('faq_section')"><span class="nav-icon">❓</span> FAQ (20선)</a>
+        <a href="#" class="nav-item" onclick="showTab('branch_finder')"><span class="nav-icon">📍</span> 지사 찾기 (울산)</a>
+        <a href="#" class="nav-item" onclick="openSpecList()"><span class="nav-icon">📖</span> 특정계층 백과사전</a>
+        <a href="#" class="nav-item" onclick="openExclusionModal()"><span class="nav-icon">🚫</span> 참여제한 체크리스트</a>
+        
+        <a href="https://www.ulsan1.kr/busi/busi05.php#form" target="_blank" class="nav-item nav-external">
+            <span class="nav-icon">📝</span> 온라인 상담 신청
+        </a>
+
+        <div class="footer-warning">
+            관리자: <strong>북부센터 팀장</strong><br>
+            데이터: 2026년 업무매뉴얼 기반<br>
+            Version: 22.0 Corrected
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="container">
+
+            <div id="calculator" class="tab-content">
+                <div class="card">
+                    <div class="card-header">
+                        <span>🕵️ 2026 자격요건 모의 판정</span>
+                    </div>
+
+                    <div class="alert-box">
+                        <span style="font-size:2rem; margin-right:15px;">📢</span>
+                        <div>
+                            <strong>[필수 확인] 가구원 산정 기준 (2026 지침)</strong><br>
+                            ① <strong>주민등록표에 등재된</strong> 본인, 배우자(사실혼 포함), 1촌 이내 직계혈족(부모, 자녀)만 포함됩니다. (형제/자매 제외)<br>
+                            ② <strong>부모님과 따로 사는 경우(별도 등본)</strong>: 원칙적으로 가구원에서 <strong>제외</strong>되며 본인의 소득/재산만 심사합니다. (단, 신청인이 희망 시 포함 가능)<br>
+                            ③ <strong>가구원 제외 대상</strong>: 현역 군인, 해외 체류자(최근 6개월 내 60일 초과), 교도소 수감자 등은 등본에 있어도 제외됩니다.
+                        </div>
+
+                        
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">① 가구원 수 (등본 기준, 위 원칙 적용)</label>
+                        <select id="family_cnt" class="form-select" onchange="updateIncomeOptions()">
+                            <option value="1">1인 가구</option>
+                            <option value="2">2인 가구</option>
+                            <option value="3">3인 가구</option>
+                            <option value="4">4인 가구</option>
+                            <option value="5">5인 가구</option>
+                            <option value="6">6인 가구</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">② 가구 소득 구간 (세전)</label>
+                        <select id="income_range" class="form-select"></select>
+                        <div class="help-text">
+                            <strong>※ 소득 포함 항목:</strong> 근로소득(상용/일용), 사업소득(농업/임업/어업/기타), 재산소득(이자/배당/임대), 이전소득(국민연금/공무원연금 등)<br>
+                            * 실업급여, 육아휴직급여, 기초연금 등은 소득 산정 시 제외될 수 있으나 공적자료(행복e음) 조회가 우선입니다.
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">③ 가구 재산 합계 (부채 차감 전)</label>
+                        <select id="asset_range" class="form-select">
+                            <option value="4">4억원 이하 (I유형 기본)</option>
+                            <option value="5">4억원 초과 ~ 5억원 이하 (청년특례 가능)</option>
+                            <option value="99">5억원 초과</option>
+                        </select>
+                        <div class="help-text">
+                            <strong>※ 재산 포함 항목:</strong> 토지, 건축물, 주택, 임차보증금(전세금), 분양권, 자동차, 회원권 등<br>
+                            * 금융기관 대출금 등 부채는 증빙 서류 제출 시 차감 인정 (개인 간 부채 제외)
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">④ 내담자 나이 (만)</label>
+                        <input type="number" id="age" class="form-control" placeholder="예: 29">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">⑤ 특정계층 해당 여부 (매뉴얼 22종 반영)</label>
+                        <div class="checkbox-container">
+                            <div class="checkbox-grid">
+                                <label class="checkbox-item"><input type="checkbox" name="spec_grp" value="y"> 1. 기초연금수급자</label>
+                                <label class="checkbox-item"><input type="checkbox" name="spec_grp" value="y"> 2. 기초생활수급자</label>
+                                <label class="checkbox-item"><input type="checkbox" name="spec_grp" value="y"> 3. 노숙인/비주택거주</label>
+                                <label class="checkbox-item"><input type="checkbox" name="spec_grp" value="y"> 4. 북한이탈주민</label>
+                                <label class="checkbox-item"><input type="checkbox" name="spec_grp" value="y"> 5. 여성가구주(가장)</label>
+                                <label class="checkbox-item"><input type="checkbox" name="spec_grp" value="y"> 6. 결혼이민자</label>
+                                <label class="checkbox-item"><input type="checkbox" name="spec_grp" value="y"> 7. 중도입국자녀</label>
+                                <label class="checkbox-item"><input type="checkbox" name="spec_grp" value="y"> 8. 신용회복지원자</label>
+                                <label class="checkbox-item"><input type="checkbox" name="spec_grp" value="y"> 9. 위기청소년</label>
+                                <label class="checkbox-item"><input type="checkbox" name="spec_grp" value="y"> 10. 구직단념청년</label>
+                                <label class="checkbox-item"><input type="checkbox" name="spec_grp" value="y"> 11. FTA피해실직자</label>
+                                <label class="checkbox-item"><input type="checkbox" name="spec_grp" value="y"> 12. 건설일용근로자</label>
+                                <label class="checkbox-item"><input type="checkbox" name="spec_grp" value="y"> 13. 국가유공자 가구원</label>
+                                <label class="checkbox-item"><input type="checkbox" name="spec_grp" value="y"> 14. 미혼모·한부모</label>
+                                <label class="checkbox-item"><input type="checkbox" name="spec_grp" value="y"> 15. 산재 장해자</label>
+                                <label class="checkbox-item"><input type="checkbox" name="spec_grp" value="y"> 16. 고용위기지역이직</label>
+                                <label class="checkbox-item"><input type="checkbox" name="spec_grp" value="y"> 17. 기업활력법이직</label>
+                                <label class="checkbox-item"><input type="checkbox" name="spec_grp" value="y"> 18. 특별고용지원업종</label>
+                                <label class="checkbox-item"><input type="checkbox" name="spec_grp" value="y"> 19. 영세자영업자</label>
+                                <label class="checkbox-item"><input type="checkbox" name="spec_grp" value="y"> 20. 소상공인(폐업)</label>
+                                <label class="checkbox-item"><input type="checkbox" name="spec_grp" value="y"> 21. 특고·프리랜서</label>
+                                <label class="checkbox-item"><input type="checkbox" name="spec_grp" value="y"> 22. 직접일자리참여</label>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    
+                    <div style="margin-top:10px;">
+                        <button type="button" class="btn btn-outline" style="background:#fff; color:var(--brand-color); border:2px solid rgba(24,90,157,0.25); padding:10px 14px; font-size:0.95rem;"
+                            onclick="openModal('spec_docs_modal')">📎 특정계층 제출서류/확인방법 보기</button>
+                    
+<div class="form-group">
+                        <label class="form-label">⑥ 최종학력 / 현재 학적 (선택)</label>
+                        <select id="edu_status" class="form-select">
+                            <option value="unknown" selected>선택 안 함</option>
+                            <option value="ms">중학교 졸업 이하</option>
+                            <option value="hs">고등학교 졸업</option>
+                            <option value="uni_enrolled">대학교 재학/휴학 중</option>
+                            <option value="uni_expected">대학교 졸업예정(최종학기)</option>
+                            <option value="uni_grad">대학교 졸업</option>
+                            <option value="grad_enrolled">대학원 재학</option>
+                            <option value="grad_grad">대학원 졸업</option>
+                            <option value="alt_study">방통대/야간대/사이버대/학점은행제</option>
+                        </select>
+                        <div class="help-text">
+                            * 재학생(휴학생 포함)은 원칙적으로 제한될 수 있습니다.<br>
+                            * 단, 졸업예정자 또는 학업 병행 가능 유형(방통대/야간대 등)은 예외 확인 후 진행될 수 있습니다.
+                        </div>
+
+                        <div id="grad_expected_wrap" style="display:none; margin-top:12px; padding:12px 12px; border-radius:12px; border:1px dashed rgba(0,0,0,0.12); background: rgba(0,0,0,0.02);">
+                            <div class="help-text" style="margin-bottom:10px;">
+                                <strong>졸업예정자 참여 가능 시기 확인</strong><br>
+                                · 2월 졸업예정자: <strong>전년도 7월 1일</strong>부터 참여 가능<br>
+                                · 8월 졸업예정자: <strong>같은 해 1월 1일</strong>부터 참여 가능<br>
+                                · <strong>의학계열 학과</strong>(의학/치의학/한의학/수의학, 약학·한약학, 간호학, 의료예과 등)은 위 기준에서 제외되어<br>
+                                &nbsp;&nbsp;2월(8월) 졸업예정자 → <strong>같은 해 1월 1일(7월 1일)</strong>부터 참여 가능
+                            </div>
+
+                            <div class="form-group" style="margin-bottom:10px;">
+                                <label class="form-label" style="margin-bottom:6px;">⑥-1 졸업예정 시기</label>
+                                <select id="grad_month" class="form-select">
+                                    <option value="unknown" selected>선택</option>
+                                    <option value="feb">2월 졸업예정</option>
+                                    <option value="aug">8월 졸업예정</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group" style="margin-bottom:10px;">
+                                <label class="form-label" style="margin-bottom:6px;">⑥-2 졸업예정 연도</label>
+                                <select id="grad_year" class="form-select">
+                                    <option value="" selected>자동(올해/내년)</option>
+                                    <option value="THIS_YEAR">올해</option>
+                                    <option value="NEXT_YEAR">내년</option>
+                                </select>
+                                <div class="help-text">* 자동 선택은 현재 날짜 기준으로 2월이면 올해, 그 외는 올해로 처리됩니다. 필요 시 직접 선택하세요.</div>
+                            </div>
+
+                            <div class="form-group" style="margin-bottom:0;">
+                                <label class="form-label" style="margin-bottom:6px;">⑥-3 의학계열 학과 해당 여부</label>
+                                <select id="is_med_major" class="form-select">
+                                    <option value="no" selected>해당 없음</option>
+                                    <option value="yes">의학계열 학과(의학/치의학/한의학/수의학, 약학·한약학, 간호학, 의료예과 등)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                    </div>
+
+</div>
+<div class="form-group">
+                        <label class="form-label">⑦ 실업급여 수급 여부</label>
+                        <select id="unemp_status" class="form-select">
+                            <option value="none" selected>해당없음</option>
+                            <option value="receiving">수급 중</option>
+                            <option value="recent_end">수급 종료 후 6개월 미만</option>
+                            <option value="unknown">모름</option>
+                        </select>
+                        <div class="help-text">
+                            * 실업급여 수급 중이거나 종료 후 6개월 미만인 경우, 유형/수당 지급 가능 여부가 달라질 수 있어 전산 확인이 필요합니다.
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">⑧ 최근 국민취업지원제도 참여 이력</label>
+                        <select id="prior_kua" class="form-select">
+                            <option value="none" selected>최근 참여 이력 없음(또는 3년 이상)</option>
+                            <option value="within3_end">최근 3년 이내 종료</option>
+                            <option value="within3_stop">최근 3년 이내 중단/포기(취업 외)</option>
+                            <option value="unknown">모름</option>
+                        </select>
+                        <div class="help-text">
+                            * 재참여 제한/유예기간 적용 여부는 사유·시점에 따라 달라질 수 있어 확인이 필요합니다.
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">⑨ 거주지 (가까운 센터 안내용)</label>
+                        <div class="grid-3">
+                            <select id="addr_city" class="form-input"></select>
+                            <select id="addr_gu" class="form-input"></select>
+                            <select id="addr_dong" class="form-input"></select>
+                        </div>
+                        <div class="help-text">
+                            * 입력하신 주소를 기반으로 울산 지역의 가까운 센터를 안내합니다.
+                        </div>
+                    </div>
+
+                    <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                            <button class="btn" onclick="calculateResult()">판정 결과 확인</button>
+                            <button class="btn btn-outline" onclick="resetCalculator()">초기화</button>
+                        </div>
+                    <div id="result_area" class="result-box">
+
+                        <div id="res_warn_banner" class="warn-banner warn-info" style="display:none;">
+                            <div class="warn-head">
+                                <strong id="res_warn_title">⚠️ 확인 필요</strong>
+                                <div class="warn-actions">
+                                    <button id="res_warn_btn_faq" type="button" class="btn btn-small btn-outline" style="display:none;" onclick="openEduFaq()">예외 유형 보기</button>
+                                    <button id="res_warn_btn_excl" type="button" class="btn btn-small btn-outline" style="display:none;" onclick="openEduExclusion()">참여제한 체크</button>
+                                </div>
+                            </div>
+                            <div id="res_warn_text"></div>
+                        </div>
+
+
+                        <h2 id="res_title" style="margin-top:0;"></h2>
+                        <div id="res_desc" style="font-size:1.1rem; line-height:1.6;"></div>
+                        <div id="res_tip" style="margin-top:20px; padding-top:15px; border-top:2px dashed rgba(0,0,0,0.1); font-size:1rem; color:#444;"></div>
+
+                        <div id="res_center" style="margin-top:16px; display:none; padding-top:14px; border-top:1px solid rgba(0,0,0,0.08);">
+                                                    <div style="font-weight:700; margin-bottom:8px;">📍 가까운 센터 안내</div>
+                                                    <div id="res_center_body" style="line-height:1.6;"></div>
+                                                </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div id="comparison" class="tab-content" style="display:none;">
+                <div class="card">
+                    <div class="card-header">
+                        <span>⚖️ I유형 vs II유형 지원내용 비교</span>
+                    </div>
+                    <table class="comp-table">
+                        <colgroup>
+                            <col style="width: 20%;">
+                            <col style="width: 40%; background-color: #fff8e1;">
+                            <col style="width: 40%; background-color: #e8f5e9;">
+                        </colgroup>
+                        <thead>
+                            <tr>
+                                <th>구분</th>
+                                <th style="color:#d35400;">I 유형<br>(구직촉진수당)</th>
+                                <th style="color:#27ae60;">II 유형<br>(취업활동비용)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>수당/비용</strong></td>
+                                <td>
+                                    <span class="highlight-text" style="font-size:1.15rem; background:#fff3cd; color:#d35400;">월 60만원 × 6개월</span><br>
+                                    (총 360만원 지원)
+                                </td>
+                                <td>
+                                    <span class="highlight-text" style="color:#27ae60; background:#e8f5e9;">+ 참여장려수당</span><br>
+                                    1회 2만원 (최대 10만원)<br>
+                                    <br>
+                                    <span class="highlight-text" style="color:#e67e22; background:#fff3cd;">+ 청년 빈일자리 지원금</span><br>
+                                    (제조업 등 취업 시 200만원)
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>가족수당</strong></td>
+                                <td>
+                                    <strong>+ 1인당 10만원</strong><br>
+                                    (월 최대 40만원 추가)<br>
+                                    <small class="badge-youth">미성년, 고령자, 중증장애인</small>
+                                </td>
+                                <td>해당 없음</td>
+                            </tr>
+                             <tr>
+                                <td><strong>내일배움카드</strong></td>
+                                <td>자부담률 우대 (대부분 면제)</td>
+                                <td>자부담률 일부 우대</td>
+                            </tr>
+                            <tr>
+                                <td><strong>취업성공수당</strong></td>
+                                <td colspan="2">
+                                    <strong>최대 150만원</strong> (근속 6개월 50만 + 12개월 100만)<br>
+                                    <small>* I유형 전체, II유형(저소득/특정계층)</small>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="card">
+                    <div class="card-header" style="border-bottom-color: #27ae60; color: #27ae60;">
+                        <span>💼 (주)좋은일자리만의 프리미엄 취업지원 서비스</span>
+                    </div>
+                    <div class="service-list">
+                        <div class="service-item">
+                            <div class="service-icon-box">1</div>
+                            <div class="service-content">
+                                <h4>심층 직무 분석 & 커리어 로드맵 설계</h4>
+                                <p>단순 상담을 넘어, 전문 컨설턴트가 내담자의 강점을 분석하고 구체적인 취업 성공 전략(Roadmap)을 수립해 드립니다.</p>
+                            </div>
+                        </div>
+                        <div class="service-item">
+                            <div class="service-icon-box">2</div>
+                            <div class="service-content">
+                                <h4>NCS 기반 직업훈련 & 스펙 업그레이드</h4>
+                                <p>국비 전액 지원(I유형)을 통해 고단가 직무 교육을 수강하고, 자격증 취득 등 실질적인 스펙 향상을 지원합니다.</p>
+                            </div>
+                        </div>
+                        <div class="service-item">
+                            <div class="service-icon-box">3</div>
+                            <div class="service-content">
+                                <h4>실전 일경험(인턴십) & 기업 네트워킹</h4>
+                                <p>공공기관 및 우수 중견기업에서의 인턴 기회를 제공하여, 직무 경력과 함께 기업 담당자와의 네트워크를 형성합니다.</p>
+                            </div>
+                        </div>
+                         <div class="service-item">
+                            <div class="service-icon-box">4</div>
+                            <div class="service-content">
+                                <h4>헤드헌팅급 기업 매칭 & 동행 면접</h4>
+                                <p>AI 매칭 시스템과 베테랑 상담사의 노하우로 '숨은 알짜 기업'을 찾아내고, 면접 동행 서비스로 합격률을 높입니다.</p>
+                            </div>
+                        </div>
+                        <div class="service-item">
+                            <div class="service-icon-box">5</div>
+                            <div class="service-content">
+                                <h4>취업 성공 후 온보딩 & 연봉 협상 코칭</h4>
+                                <p>취업 후 3개월간 직장 적응(On-boarding)을 돕고, 경력직 이직 시 연봉 협상 팁 등 사후 관리를 제공합니다.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="faq_section" class="tab-content" style="display:none;">
+                <div class="card">
+                    <div class="card-header">
+                        <span>❓ 자주 묻는 질문 (Best 20)</span>
+                    </div>
+                    <div class="faq-grid">
+                        <div>
+                            <div class="accordion-item"><div class="accordion-header" onclick="toggleAccordion(this)">Q. 대학생(재학생)도 참여 가능한가요? ▼</div><div class="accordion-content">A. 원칙적으로 재학생(휴학생 포함)은 불가능합니다. 다만 <strong>졸업예정자(최종학년 마지막 학기)</strong>는 증빙서류 제출 시 참여 가능할 수 있습니다.<br><br><strong>✅ 참여 가능 시기</strong><br>• <strong>2월 졸업예정자</strong>: 전년도 <strong>7월 1일</strong>부터 참여 가능<br>• <strong>8월 졸업예정자</strong>: 같은 해 <strong>1월 1일</strong>부터 참여 가능<br>※ 단, <strong>의학계열 학과</strong>(의학/치의학/한의학/수의학, 약학·한약학, 간호학, 의료예과 등)은 제외되어 <strong>2월(8월) 졸업예정자 → 같은 해 1월 1일(7월 1일)</strong>부터 참여 가능<br><br>(방통대, 야간대 등 학업 병행 가능 시 예외 허용)</div></div>
+                            <div class="accordion-item"><div class="accordion-header" onclick="toggleAccordion(this)">Q. 아르바이트 중인데 신청 되나요? ▼</div><div class="accordion-content">A. <strong>주 30시간 미만</strong> 근무하는 경우에만 신청 가능합니다. 소득과 재산 요건도 동시에 충족해야 합니다.</div></div>
+
+                            <div class="accordion-item">
+                                <div class="accordion-header" onclick="toggleAccordion(this)">Q. 구직촉진수당 받는 중 아르바이트/부업 소득이 생기면 수당이 중단되나요? ▼</div>
+                                <div class="accordion-content">
+                                    A. 소득이 생기면 <strong>지급 신청서(회차별)</strong>에 반드시 신고해야 하며, 신고소득(프로그램 참여수당 등은 제외)을 기준으로 해당 회차 수당이 <strong>감액</strong>되거나 <strong>지급 정지</strong>될 수 있습니다.<br><br>
+                                    • <strong>감액</strong>: 신고소득이 ‘기준금액’ 미만이면 <strong>(기준금액 − 신고소득)</strong> 범위에서 지급(회차별 최대 지급액 한도 내)<br>
+                                    • <strong>지급 정지</strong>: 신고소득이 ‘기준금액’ 이상이면 해당 회차는 지급 정지되며, 지급 정지가 <strong>3회</strong> 발생하면 참여가 취소될 수 있습니다.<br><br>
+                                    ※ 기준금액은 <strong>월 지급액의 2배</strong>와 <strong>1인가구 중위소득 60%</strong> 중 큰 금액으로 산정됩니다.
+                                </div>
+                            </div>
+
+                            <div class="accordion-item"><div class="accordion-header" onclick="toggleAccordion(this)">Q. 프리랜서/특수고용직은요? ▼</div><div class="accordion-content">A. 월 소득이 <strong>250만원 미만</strong>이어야 합니다. (특정계층 II유형으로 참여 가능)</div></div>
+                            <div class="accordion-item"><div class="accordion-header" onclick="toggleAccordion(this)">Q. 자영업자도 지원받을 수 있나요? ▼</div><div class="accordion-content">A. 연 매출 <strong>3억원 이하</strong>인 영세자영업자는 II유형으로 참여 가능합니다. (단, 임대사업자는 제외될 수 있음)</div></div>
+                            <div class="accordion-item"><div class="accordion-header" onclick="toggleAccordion(this)">Q. 실업급여 받고 바로 신청되나요? ▼</div><div class="accordion-content">A. <strong>I유형(구직촉진수당)</strong>은 실업급여 종료 후 <strong>6개월</strong>이 지나야 신청 가능합니다. II유형은 즉시 신청 가능합니다.</div></div>
+                            <div class="accordion-item"><div class="accordion-header" onclick="toggleAccordion(this)">Q. 자발적 퇴사자도 되나요? ▼</div><div class="accordion-content">A. <strong>네, 가능합니다!</strong> 국취제는 퇴사 사유를 묻지 않습니다. 소득/재산 기준만 봅니다.</div></div>
+                            <div class="accordion-item"><div class="accordion-header" onclick="toggleAccordion(this)">Q. 구직촉진수당은 얼마인가요? ▼</div><div class="accordion-content">A. 월 <strong>60만원씩 6개월간</strong> 지급됩니다. (가족수당 별도: 1인당 10만원, 월 최대 40만원 추가)</div></div>
+                            <div class="accordion-item"><div class="accordion-header" onclick="toggleAccordion(this)">Q. 수당 받다가 알바해서 소득 생기면? ▼</div><div class="accordion-content">A. 반드시 신고해야 합니다. 월 소득이 단위지급액(약 60만원~133만원)을 초과하면 해당 월 수당은 지급되지 않습니다. (미신고 시 부정수급)</div></div>
+                            <div class="accordion-item"><div class="accordion-header" onclick="toggleAccordion(this)">Q. I유형과 II유형 선택 가능한가요? ▼</div><div class="accordion-content">A. 전산으로 자동 판정됩니다. 다만, 특정계층 증빙 서류를 제출하여 II유형으로 선정될 수는 있습니다.</div></div>
+                            <div class="accordion-item"><div class="accordion-header" onclick="toggleAccordion(this)">Q. 중도 포기 후 재참여 되나요? ▼</div><div class="accordion-content">A. 취업 이외의 사유로 중도 포기 시 <strong>3년 동안</strong> 재참여가 제한될 수 있으니 신중해야 합니다.</div></div>
+                        </div>
+                        <div>
+                            <div class="accordion-item"><div class="accordion-header" onclick="toggleAccordion(this)">Q. 가족수당 대상은 누구인가요? ▼</div><div class="accordion-content">A. 주민등록상 가구원 중 <strong>미성년자, 만 70세 이상 고령자, 중증장애인</strong>이 해당됩니다.</div></div>
+                            <div class="accordion-item"><div class="accordion-header" onclick="toggleAccordion(this)">Q. 재산에 부채도 포함되나요? ▼</div><div class="accordion-content">A. 공적자료상 재산가액에서 금융기관 부채(대출금)는 증빙 시 차감해 줍니다. (개인 간 차용증은 인정 안 됨)</div></div>
+                            <div class="accordion-item"><div class="accordion-header" onclick="toggleAccordion(this)">Q. 군 입대 예정인데 신청 되나요? ▼</div><div class="accordion-content">A. 입대일이 많이 남았다면 가능하나, <strong>훈련 참여가 불가능한 경우</strong> 제한될 수 있습니다. (전역 2개월 전부터 신청 가능)</div></div>
+                            <div class="accordion-item"><div class="accordion-header" onclick="toggleAccordion(this)">Q. 지자체 청년수당과 중복 되나요? ▼</div><div class="accordion-content">A. 원칙적으로 <strong>동시 참여 불가능</strong>합니다. 청년수당 종료 후 6개월이 지나야 I유형 신청이 가능합니다.</div></div>
+                            <div class="accordion-item"><div class="accordion-header" onclick="toggleAccordion(this)">Q. 건강보험료로 소득 산정하나요? ▼</div><div class="accordion-content">A. 2026년 기준 국민취업지원제도의 소득 산정은
+건강보험료가 아니라, 가구단위 종합소득 신고액 등 공적 소득자료</strong>를 기준으로 산정합니다.</div></div>
+                            <div class="accordion-item"><div class="accordion-header" onclick="toggleAccordion(this)">Q. 취업성공수당은 누구나 받나요? ▼</div><div class="accordion-content">A. 취업성공수당은 Ⅰ유형 참여자와 Ⅱ유형 중 중위소득 60% 이하 또는 특정계층 참여자에게만 지급됩니다. (6개월 근속 50만원 + 12개월 근속 100만원)</div></div>
+                             <div class="accordion-item"><div class="accordion-header" onclick="toggleAccordion(this)">Q. 참여 중 이사가면 어떡하나요? ▼</div><div class="accordion-content">A. 이사한 지역의 관할 고용센터(또는 위탁기관)로 <strong>이관 신청</strong>이 가능합니다.</div></div>
+                             <div class="accordion-item"><div class="accordion-header" onclick="toggleAccordion(this)">Q. 내일배움카드 잔액이 없어도 되나요? ▼</div><div class="accordion-content">A. 국민취업지원제도 참여자는 직업훈련 참여 시 훈련비 한도가 추가로 지원될 수 있어, 기존 내일배움카드 잔액이 부족하더라도 최대 200만원 범위 내에서 추가 지원을 받아 총 500만원 한도 내에서 훈련 참여가 가능합니다.
+
+※ 개인별 참여유형 및 훈련 과정에 따라 지원 여부는 달라질 수 있습니다.</div></div>
+                             <div class="accordion-item"><div class="accordion-header" onclick="toggleAccordion(this)">Q. 온라인 신청만 가능한가요? ▼</div><div class="accordion-content">A. 방문 신청을 권장드립니다. 국민취업지원제도는 온라인 신청도 가능하지만, 신청 유형 확인, 소득·자격 검토, 이후 진행 절차 안내를 위해 거주지 관할 고용센터 또는 위탁기관 방문 신청을 권장하고 있습니다.</div></div>
+                             <div class="accordion-item"><div class="accordion-header" onclick="toggleAccordion(this)">Q. 청년특례(소득 120%)는 뭔가요? ▼</div><div class="accordion-content">A. 15~34세 청년은 소득요건이 완화되어 중위소득 120% 이하여도 I유형(선발형)으로 참여 가능합니다.</div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="branch_finder" class="tab-content" style="display:none;">
+                <div class="card">
+                    <div class="card-header">
+                        <span>📍 (주)좋은일자리 울산 지사 안내</span>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">거주지 동 이름 입력 (예: 무거동, 구영리, 화봉동)</label>
+                        <div style="display:flex; gap:10px;">
+                            <input type="text" id="ulsan_addr" class="form-control" placeholder="동 이름을 입력하세요" onkeypress="handleEnter(event)">
+                            <button class="btn" style="width:120px;" onclick="findBranch()">지사 찾기</button>
+                        </div>
+                        <div style="margin-top:10px; font-size:0.9rem; color:#666;">
+                            * 실제 생활권과 교통을 반영하여 가장 가까운 센터를 안내합니다. (예: 무거동 → 서부센터)
+                        </div>
+                    </div>
+
+                    <div id="branch_result" class="branch-result">
+                        <h3 id="branch_name" style="margin-top:0; color:#d35400;"></h3>
+                        <p id="branch_desc" style="margin-bottom:15px; font-weight:bold; color:#555;"></p>
+                        <p id="branch_addr" style="font-size:1.05rem;"></p>
+                        <p id="branch_tel" style="font-weight:bold; font-size:1.05rem; color:#2c3e50;"></p>
+                        <div class="action-buttons">
+                            <a id="branch_map" href="#" target="_blank" class="map-link">📍 지도 보기</a>
+                            <a id="branch_kakao" href="#" target="_blank" class="kakao-link">💬 카톡 상담</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div id="spec_modal" class="modal-overlay">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal('spec_modal')">&times;</span>
+            <div class="modal-title">📖 특정계층 백과사전 (22종 상세)</div>
+            <div style="background:#fff3e0; padding:15px; border-radius:8px; margin-bottom:25px; border-left:5px solid #ffa000;">
+                ※ 아래 유형에 해당하면 소득/재산 기준을 초과하더라도 <strong>II유형</strong>으로 참여 가능합니다. (단, 제외대상 제외)
+            </div>
+            <div class="spec-grid">
+                <div class="spec-card"><div class="spec-head"><span class="spec-num">1</span>기초연금수급자</div><div class="spec-body">만 65세 이상으로 소득인정액이 선정기준액 이하(하위 70%)여서 기초연금을 받고 있는 어르신</div></div>
+                <div class="spec-card"><div class="spec-head"><span class="spec-num">2</span>기초생활수급자</div><div class="spec-body">생계급여 조건부수급자, 보장시설수급자, 또는 일반수급자 중 근로능력이 있어 고용센터장이 인정한 자</div></div>
+                <div class="spec-card"><div class="spec-head"><span class="spec-num">3</span>노숙인 등 비주택거주자</div><div class="spec-body">노숙인 시설 입소자 또는 최저주거기준 미달 거주자로서 관련 기관의 추천을 받은 자</div></div>
+                <div class="spec-card"><div class="spec-head"><span class="spec-num">4</span>북한이탈주민</div><div class="spec-body">북한이탈주민 보호대상자로서 거주지 보호기간(5년) 이내에 있는 자</div></div>
+                <div class="spec-card"><div class="spec-head"><span class="spec-num">5</span>여성가구주 (가장)</div><div class="spec-body">배우자가 없거나 부양능력이 없는 배우자를 부양하며, 18세 미만 자녀 등을 실질적으로 부양하는 여성</div></div>
+                <div class="spec-card"><div class="spec-head"><span class="spec-num">6</span>결혼이민자</div><div class="spec-body">국적 미취득자 포함 (F-2, F-5, F-6 비자). 한국어 능력 등 취업 의지가 있는 자</div></div>
+                <div class="spec-card"><div class="spec-head"><span class="spec-num">7</span>중도입국자녀</div><div class="spec-body">결혼이민자가 한국 입국 후 본국에서 데려온 15세~24세 자녀</div></div>
+                <div class="spec-card"><div class="spec-head"><span class="spec-num">8</span>신용회복지원자</div><div class="spec-body">신용회복위원회 등에서 채무조정 확정 후 6개월 이상 성실 상환 중인 자</div></div>
+                <div class="spec-card"><div class="spec-head"><span class="spec-num">9</span>위기청소년</div><div class="spec-body">만 15~24세. 학교 밖 청소년, 보호시설 퇴소자, 소년원 퇴원자 등 자립 지원이 필요한 청소년</div></div>
+                <div class="spec-card"><div class="spec-head"><span class="spec-num">10</span>구직단념청년</div><div class="spec-body">최근 6개월간 취업/교육 이력이 없고 구직단념 점수가 일정 수준 이상인 청년 (청년도전지원사업 이수자 등)</div></div>
+                <div class="spec-card"><div class="spec-head"><span class="spec-num">11</span>FTA 피해 실직자</div><div class="spec-desc">무역조정지원기업에서 실직한 근로자</div></div>
+                <div class="spec-card"><div class="spec-head"><span class="spec-num">12</span>건설일용근로자</div><div class="spec-body">신청일 이전 180일간 건설일용직 근로내역이 30일 이상 있는 자</div></div>
+                <div class="spec-card"><div class="spec-head"><span class="spec-num">13</span>국가유공자 가구원</div><div class="spec-body">보훈지청에서 취업지원 대상자 추천서(증명서) 발급이 가능한 유공자 및 유가족</div></div>
+                <div class="spec-card"><div class="spec-head"><span class="spec-num">14</span>미혼모(부)·한부모</div><div class="spec-body">한부모가족지원법상 한부모 (18세 미만 자녀 양육), 청소년 한부모 등</div></div>
+                <div class="spec-card"><div class="spec-head"><span class="spec-num">15</span>산재 장해자</div><div class="spec-body">산재 요양 종결 후 장해급여를 지급받은 자로서 현재 실업 상태인 자</div></div>
+                <div class="spec-card"><div class="spec-head"><span class="spec-num">16</span>고용위기지역 이직자</div><div class="spec-body">고용위기지역 또는 고용재난지역으로 지정된 곳의 사업장에서 퇴직한 자</div></div>
+                <div class="spec-card"><div class="spec-head"><span class="spec-num">17</span>기업활력법 이직자</div><div class="spec-body">사업재편계획 승인 기업에서 구조조정 등으로 퇴직한 자</div></div>
+                <div class="spec-card"><div class="spec-head"><span class="spec-num">18</span>특별고용지원업종</div><div class="spec-body">정부가 지정한 특별고용지원업종(조선, 여행 등) 사업장에서 퇴직한 자</div></div>
+                <div class="spec-card"><div class="spec-head"><span class="spec-num">19</span>영세자영업자</div><div class="spec-body">연 매출액 3억원 이하인 사업자 (부가가치세 과세표준증명원 확인)</div></div>
+                <div class="spec-card"><div class="spec-head"><span class="spec-num">20</span>소상공인 (폐업)</div><div class="spec-body">희망리턴패키지 등에 참여한 폐업 예정 또는 폐업한 소상공인</div></div>
+                <div class="spec-card"><div class="spec-head"><span class="spec-num">21</span>특고·프리랜서</div><div class="spec-body">월 소득 250만원 미만인 특수형태근로종사자, 프리랜서, 플랫폼 종사자</div></div>
+                <div class="spec-card"><div class="spec-head"><span class="spec-num">22</span>직접일자리 참여자</div><div class="spec-body">정부 재정지원 일자리 사업에 참여 종료 후 실업급여 수급 요건을 못 갖춘 자</div></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="spec_docs_modal" class="modal-overlay">
+        <div class="modal-content" style="max-width:980px;">
+            <span class="close-btn" onclick="closeModal('spec_docs_modal')">&times;</span>
+            <div class="modal-title">📎 특정계층(22종) 제출서류/확인방법</div>
+            <div style="background:#e8f4ff; padding:12px 14px; border-radius:10px; margin-bottom:16px; line-height:1.55;">
+                * 원칙: <strong>취업지원 전산망·행정정보공동이용망</strong>으로 우선 확인 후, 확인 불가한 항목은 <strong>민원인 제출 서류</strong>로 보완합니다.
+            </div>
+
+            <div style="max-height:60vh; overflow:auto; border:1px solid rgba(0,0,0,0.08); border-radius:12px;">
+                <table style="width:100%; border-collapse:collapse; font-size:0.95rem;">
+                    <thead>
+                        <tr style="position:sticky; top:0; background:#f7fbff; z-index:1;">
+                            <th style="text-align:left; padding:12px; border-bottom:1px solid rgba(0,0,0,0.08); width:210px;">구분</th>
+                            <th style="text-align:left; padding:12px; border-bottom:1px solid rgba(0,0,0,0.08);">필요서류 / 확인방법(요약)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td style="padding:12px; border-bottom:1px solid rgba(0,0,0,0.06);">1. 기초연금수급자</td><td style="padding:12px; border-bottom:1px solid rgba(0,0,0,0.06);">기초연금수급자 확인서</td></tr>
+                        <tr><td style="padding:12px; border-bottom:1px solid rgba(0,0,0,0.06);">2. 기초생활수급자</td><td style="padding:12px; border-bottom:1px solid rgba(0,0,0,0.06);">조건부수급자(보건복지부 연계자료), 보장시설수급자(지자체/보장시설 추천서 등)</td></tr>
+                        <tr><td style="padding:12px; border-bottom:1px solid rgba(0,0,0,0.06);">3. 노숙인/비주택거주</td><td style="padding:12px; border-bottom:1px solid rgba(0,0,0,0.06);">비주택 거주사실 확인서(지자체), 부랑인복지시설·노숙인쉼터 입소자 확인서, 상담보호센터 보호자 확인서</td></tr>
+                        <tr><td style="padding:12px; border-bottom:1px solid rgba(0,0,0,0.06);">4. 북한이탈주민</td><td style="padding:12px; border-bottom:1px solid rgba(0,0,0,0.06);">북한이탈주민등록확인서(통일부 연계)</td></tr>
+                        <tr><td style="padding:12px; border-bottom:1px solid rgba(0,0,0,0.06);">5. 여성가구주(가장)</td><td style="padding:12px; border-bottom:1px solid rgba(0,0,0,0.06);">가족관계증명서 + 사유별 증빙(실종신고서, 장애/질병 진단, 병적증명서, 재학증명서, 수용증명/형확정, 이혼소송 확인 등)</td></tr>
+                        <tr><td style="padding:12px; border-bottom:1px solid rgba(0,0,0,0.06);">6. 결혼이민자</td><td style="padding:12px; border-bottom:1px solid rgba(0,0,0,0.06);">가족/혼인관계 확인 + 외국인등록사실증명·출입국정보, (필요 시) TOPIK 등 한국어능력 증빙</td></tr>
+                        <tr><td style="padding:12px; border-bottom:1px solid rgba(0,0,0,0.06);">7. 중도입국자녀</td><td style="padding:12px; border-bottom:1px solid rgba(0,0,0,0.06);">외국인등록사실증명·출입국정보 + 대한민국 국민인 부/모 신원보증서 등 가족관계 확인 서류</td></tr>
+                        <tr><td style="padding:12px; border-bottom:1px solid rgba(0,0,0,0.06);">8. 신용회복지원자</td><td style="padding:12px; border-bottom:1px solid rgba(0,0,0,0.06);">신용회복지원확인서, 참여대상자 추천서, 채무조정 및 조정확약서, 회생결정문</td></tr>
+                        <tr><td style="padding:12px; border-bottom:1px solid rgba(0,0,0,0.06);">9. 위기청소년</td><td style="padding:12px; border-bottom:1px solid rgba(0,0,0,0.06);">시설 확인서/추천서, 제적·자퇴·검정고시 합격증, 보호종료 확인서, 시설 입·퇴소 확인서</td></tr>
+                        <tr><td style="padding:12px; border-bottom:1px solid rgba(0,0,0,0.06);">10. 구직단념청년</td><td style="padding:12px; border-bottom:1px solid rgba(0,0,0,0.06);">신청일 기준 2년 교육·훈련·근로이력 확인 + 대상자 문답표(21점 이상)</td></tr>
+                        <tr><td style="padding:12px; border-bottom:1px solid rgba(0,0,0,0.06);">11. FTA피해실직자</td><td style="padding:12px; border-bottom:1px solid rgba(0,0,0,0.06);">통상변화대응지원기업/근로자 목록(고용24), 폐업사실증명(국세청), (농어업인) 폐업지원 증빙 등</td></tr>
+                        <tr><td style="padding:12px; border-bottom:1px solid rgba(0,0,0,0.06);">12. 건설일용근로자</td><td style="padding:12px; border-bottom:1px solid rgba(0,0,0,0.06);">고용보험전산망(일용근로내역·피보험자이력조회) 확인</td></tr>
+                        <tr><td style="padding:12px; border-bottom:1px solid rgba(0,0,0,0.06);">13. 국가유공자 가구원</td><td style="padding:12px; border-bottom:1px solid rgba(0,0,0,0.06);">보훈(지)청 발행 ‘취업지원 대상자 증명서’(민원인 제출)</td></tr>
+                        <tr><td style="padding:12px; border-bottom:1px solid rgba(0,0,0,0.06);">14. 미혼모·한부모</td><td style="padding:12px; border-bottom:1px solid rgba(0,0,0,0.06);">한부모가족증명서(행정정보공동이용망 가능) + (시설 등) 추천서, 청소년부모는 등본/가족관계증명서</td></tr>
+                        <tr><td style="padding:12px; border-bottom:1px solid rgba(0,0,0,0.06);">15. 산재 장해자</td><td style="padding:12px; border-bottom:1px solid rgba(0,0,0,0.06);">근로복지공단 추천서</td></tr>
+                        <tr><td style="padding:12px; border-bottom:1px solid rgba(0,0,0,0.06);">16. 고용위기지역이직</td><td style="padding:12px; border-bottom:1px solid rgba(0,0,0,0.06);">해당 지역 지정기간 내 근로·이직 이력(고용보험전산망 확인)</td></tr>
+                        <tr><td style="padding:12px; border-bottom:1px solid rgba(0,0,0,0.06);">17. 기업활력법이직</td><td style="padding:12px; border-bottom:1px solid rgba(0,0,0,0.06);">사업재편계획 승인(공표) 사실 확인(산업통상자원부/홈페이지 등) + 소득조사 자료</td></tr>
+                        <tr><td style="padding:12px; border-bottom:1px solid rgba(0,0,0,0.06);">18. 특별고용지원업종</td><td style="padding:12px; border-bottom:1px solid rgba(0,0,0,0.06);">지정 업종 해당 사업장 근로·이직 이력(고용보험전산망 등 확인)</td></tr>
+                        <tr><td style="padding:12px; border-bottom:1px solid rgba(0,0,0,0.06);">19. 영세자영업자</td><td style="padding:12px; border-bottom:1px solid rgba(0,0,0,0.06);">부가가치세 과세표준증명원, 폐업사실/사실증명, 종합소득세 신고내역 등(국세청 자료 또는 민원인 제출)</td></tr>
+                        <tr><td style="padding:12px; border-bottom:1px solid rgba(0,0,0,0.06);">20. 소상공인(폐업)</td><td style="padding:12px; border-bottom:1px solid rgba(0,0,0,0.06);">폐업사실증명(국세청) + 희망리턴패키지 등 참여 확인자료</td></tr>
+                        <tr><td style="padding:12px; border-bottom:1px solid rgba(0,0,0,0.06);">21. 특고·프리랜서</td><td style="padding:12px; border-bottom:1px solid rgba(0,0,0,0.06);">노무제공/사업소득 입증자료(계약서, 지급내역, 통장내역 등)로 월 소득 250만원 미만 확인</td></tr>
+                        <tr><td style="padding:12px; border-bottom:1px solid rgba(0,0,0,0.06);">22. 직접일자리참여</td><td style="padding:12px; border-bottom:1px solid rgba(0,0,0,0.06);">재정지원 일자리사업 참여 확인(참여기관 확인서 등) + 근로시간/소득 확인</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="exclusion_modal" class="modal-overlay">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal('exclusion_modal')">&times;</span>
+            <div class="modal-title">🚫 참여 제한 대상 (Self-Check)</div>
+            <div style="font-size:1.1rem; line-height:2; color:#333;">
+                <ul style="list-style-type: none; padding:0;">
+                    <li style="margin-bottom:15px; padding:10px; background:#fff5f5; border-radius:8px;">❌ <strong>재학생 및 휴학생</strong><br><span style="font-size:0.9rem; color:#666;">(단, 졸업예정자/학업병행 유형은 예외 가능. 졸업예정자는 2월/8월 시기에 따라 참여 가능 시작일이 다름)</span></li>
+                    <li style="margin-bottom:15px; padding:10px; background:#fff5f5; border-radius:8px;">❌ <strong>군 복무 중인 자</strong><br><span style="font-size:0.9rem; color:#666;">(단, 전역 예정일 2개월 전부터는 가능)</span></li>
+                    <li style="margin-bottom:15px; padding:10px; background:#fff5f5; border-radius:8px;">❌ <strong>실업급여 수급 중 또는 종료 후 6개월 미만</strong><br><span style="font-size:0.9rem; color:#666;">(I유형 제한, II유형은 가능)</span></li>
+                    <li style="margin-bottom:15px; padding:10px; background:#fff5f5; border-radius:8px;">❌ <strong>생계급여 수급자</strong><br><span style="font-size:0.9rem; color:#666;">(I유형 제한, II유형은 가능)</span></li>
+                    <li style="margin-bottom:15px; padding:10px; background:#fff5f5; border-radius:8px;">❌ <strong>정부 재정지원 일자리 참여 중인 자</strong><br><span style="font-size:0.9rem; color:#666;">(종료 후 6개월 경과 필요, 단 직접일자리는 일부 예외)</span></li>
+                    <li style="margin-bottom:15px; padding:10px; background:#fff5f5; border-radius:8px;">❌ <strong>월 소득 250만원 이상의 특고/프리랜서</strong><br><span style="font-size:0.9rem; color:#666;">(I유형 소득 요건 초과 간주)</span></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+<script>
+    // 2026 기준 중위소득 데이터
+    const medianIncome = { 1: 2564238, 2: 4199292, 3: 5359036, 4: 6494738, 5: 7556719, 6: 8555952 };
+    
+    function showTab(id) {
+        document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
+        const target = document.getElementById(id);
+        if (target) target.style.display = 'block';
+
+        document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+
+        // ✅ 클릭(기존) + 코드 호출(신규) 모두 안전하게 처리
+        const e = (typeof window !== 'undefined') ? window.event : null;
+        if (e && e.currentTarget && e.currentTarget.classList && e.currentTarget.classList.contains('nav-item')) {
+            e.currentTarget.classList.add('active');
+        } else {
+            const nav = document.querySelector(`.nav-item[onclick*="showTab('${id}')"]`);
+            if (nav) nav.classList.add('active');
+        }
+    }
+    
+    function openSpecList() { document.getElementById('spec_modal').style.display = 'flex'; }
+    function openExclusionModal() { document.getElementById('exclusion_modal').style.display = 'flex'; }
+    function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+    function toggleAccordion(header) { header.classList.toggle('active'); }
+
+
+    function setResultWarnBanner(messages, level, title, showFaqBtn, showExclBtn) {
+        const banner = document.getElementById('res_warn_banner');
+        const text = document.getElementById('res_warn_text');
+        const ttl = document.getElementById('res_warn_title');
+        const btnFaq = document.getElementById('res_warn_btn_faq');
+        const btnExcl = document.getElementById('res_warn_btn_excl');
+        if (!banner || !text || !ttl || !btnFaq || !btnExcl) return;
+
+        banner.classList.remove('warn-student','warn-expected','warn-info');
+        banner.classList.add(level || 'warn-info');
+
+        ttl.textContent = title || "⚠️ 확인 필요";
+        btnFaq.style.display = showFaqBtn ? 'inline-flex' : 'none';
+        btnExcl.style.display = showExclBtn ? 'inline-flex' : 'none';
+
+        if (messages && messages.length) {
+            banner.style.display = 'block';
+            text.innerHTML = messages.map(m => "• " + m).join("<br>");
+        } else {
+            banner.style.display = 'none';
+            text.innerHTML = "";
+        }
+    }
+
+    function openEduFaq() {
+        showTab('faq_section');
+        setTimeout(() => {
+            const headers = Array.from(document.querySelectorAll('#faq_section .accordion-header'));
+            const target = headers.find(h => (h.textContent || '').includes('대학생(재학생)'));
+            if (!target) return;
+
+            headers.forEach(h => { if (h !== target) h.classList.remove('active'); });
+            target.classList.add('active');
+            target.scrollIntoView({ behavior:'smooth', block:'start' });
+            target.classList.add('faq-flash');
+            setTimeout(() => target.classList.remove('faq-flash'), 1200);
+        }, 50);
+    }
+
+    function openEduExclusion() {
+        // 참여제한 체크리스트 모달 열기
+        if (typeof openExclusionModal === 'function') openExclusionModal();
+        else if (typeof openModal === 'function') openModal('exclusion_modal');
+
+        setTimeout(() => {
+            const modal = document.getElementById('exclusion_modal');
+            if (!modal) return;
+
+            // "재학생 및 휴학생" 항목을 찾아 스크롤/강조
+            const items = Array.from(modal.querySelectorAll('li'));
+            const target = items.find(li => (li.textContent || '').includes('재학생'));
+            if (!target) return;
+
+            target.scrollIntoView({ behavior:'smooth', block:'center' });
+            target.classList.add('faq-flash');
+            setTimeout(() => target.classList.remove('faq-flash'), 1200);
+        }, 80);
+    }
+
+
+
+    function updateIncomeOptions() {
+        const cnt = document.getElementById('family_cnt').value;
+        const base = medianIncome[cnt];
+        const sel = document.getElementById('income_range');
+        sel.innerHTML = '';
+        sel.add(new Option(`중위 60% 이하 (~${Math.floor(base*0.6).toLocaleString()}원)`, '0.6'));
+        sel.add(new Option(`중위 100% 이하 (~${base.toLocaleString()}원)`, '1.0'));
+        sel.add(new Option(`중위 120% 이하 (~${Math.floor(base*1.2).toLocaleString()}원)`, '1.2'));
+        sel.add(new Option(`중위 120% 초과`, '9.9'));
+    }
+    
+    function calculateResult() {
+        const age = parseInt(document.getElementById('age').value, 10);
+        const income = parseFloat(document.getElementById('income_range').value);
+        const asset = parseFloat(document.getElementById('asset_range').value);
+        const isSpec = document.querySelectorAll('input[name="spec_grp"]:checked').length > 0;
+        const unemp = (document.getElementById('unemp_status') || {}).value || "unknown";
+        const prior = (document.getElementById('prior_kua') || {}).value || "unknown";
+
+        const edu = (document.getElementById('edu_status') || {}).value || "unknown";
+        const isStudent = (edu === "uni_enrolled" || edu === "grad_enrolled");
+        const isGradExpected = (edu === "uni_expected");
+        const isAltAllowedStudy = (edu === "alt_study");
+        // (추가) 졸업예정자 참여 가능 시기(2월/8월) + 의학계열 예외
+        const gradMonth = (document.getElementById('grad_month') || {}).value || "unknown";
+        const gradYearSel = (document.getElementById('grad_year') || {}).value || "";
+        const gradYear = resolveGradYearSelection(gradYearSel);
+        const isMedMajor = ((document.getElementById('is_med_major') || {}).value || "no") === "yes";
+        let gradStartDate = null;
+        let gradNotYet = false;
+
+
+        const city = (document.getElementById('addr_city') || {}).value || "";
+        const gu = (document.getElementById('addr_gu') || {}).value || "";
+        const dong = (document.getElementById('addr_dong') || {}).value || "";
+
+        const resBox = document.getElementById('result_area');
+        if (!age && age !== 0) { alert('나이를 입력해주세요'); return; }
+
+        // 연령 제한(만 15~69)
+        if (age < 15 || age > 69) {
+            resBox.style.display = 'block';
+            resBox.className = 'result-box res-fail';
+            document.getElementById('res_title').innerText = "🚫 지원 대상 아님(연령)";
+            document.getElementById('res_desc').innerHTML = "국민취업지원제도는 <strong>만 15세~만 69세</strong> 범위에서 신청할 수 있습니다.";
+            document.getElementById('res_tip').innerText = "연령 요건에 해당하지 않아 신청이 어렵습니다.";
+            renderCenterToResult("");
+            return;
+        }
+
+        resBox.style.display = 'block';
+
+        const isYouth = (age >= 15 && age <= 34);     // 청년(기본)
+        const isMid = (age >= 35 && age <= 69);       // 중장년
+
+        const warn = [];
+        if (unemp === "receiving" || unemp === "recent_end") {
+            warn.push("실업급여 수급(또는 종료 6개월 미만) 상태는 유형/수당 지급 가능 여부가 달라질 수 있어 전산 확인이 필요합니다.");
+        }
+        if (prior === "within3_stop") {
+            warn.push("최근 3년 이내 중단/포기(취업 외) 이력은 재참여 제한이 적용될 수 있습니다(사유/시점 확인 필요).");
+        }
+
+        // (추가) 학적(선택) 기반 안내
+        if (isStudent) {
+            warn.push("재학생/휴학생은 원칙적으로 참여 제한될 수 있습니다. (예외: 졸업예정자·학업병행 가능 유형 등은 증빙 확인 필요)");
+        } else if (isGradExpected) {
+            // 졸업예정자: 참여 가능 시기 안내
+            if (gradMonth === "unknown") {
+                warn.push("졸업예정자 선택됨 → 2월/8월 졸업예정 시기를 선택하면 참여 가능 시작일 안내가 정확해집니다.");
+            } else {
+                gradStartDate = computeGradParticipationStartDate(gradYear, gradMonth, isMedMajor);
+                if (gradStartDate) {
+                    gradStartDate.setHours(0,0,0,0);
+                    const today0 = new Date(); today0.setHours(0,0,0,0);
+                    if (today0 < gradStartDate) {
+                        gradNotYet = true;
+                        warn.push(`졸업예정자 참여 가능 시작일: ${ymd(gradStartDate)} (현재 날짜 기준, 시작일 이전일 수 있어 확인 필요)`);
+                    } else {
+                        warn.push(`졸업예정자 참여 가능 시작일: ${ymd(gradStartDate)} (증빙 확인 권장)`);
+                    }
+                    if (isMedMajor) {
+                        warn.push("의학계열 학과는 참여 가능 시기 기준이 다를 수 있어(의학/치의학/한의학/수의학, 약학·한약학, 간호학, 의료예과 등) 전산/증빙 확인 권장");
+                    }
+                } else {
+                    warn.push("졸업예정자 참여 가능 시기 계산이 어려움 → 졸업예정 월/연도 확인 필요");
+                }
+            }
+        } else if (isAltAllowedStudy) {
+            warn.push("방통대/야간대/사이버대/학점은행제 등 학업 병행 유형은 예외 가능 → 증빙 확인 권장");
+        }
+
+
+        // I유형(선발형) 기본 요건: 중위소득 60% 이하 + 재산(청년 5억/그외 4억) 이하
+        const assetLimit = isYouth ? 5 : 4;
+        const eligibleType1Base = (income <= 0.6 && asset <= assetLimit);
+
+        // II유형 요건(첨부 기준): 특정계층/청년은 소득·재산 요건 없음, 중장년은 중위소득 100% 이하
+        const eligibleType2 = (isSpec || isYouth || (isMid && income <= 1.0));
+
+        // 결과 출력(단정 문구 금지: 선발형/기준점수 변동 안내)
+        if (eligibleType1Base) {
+            resBox.className = 'result-box res-success';
+            document.getElementById('res_title').innerText = "✅ I유형 신청 가능(선발형)";
+            document.getElementById('res_desc').innerHTML =
+                "소득·재산 요건(중위소득 <strong>60% 이하</strong>, 재산 <strong>" + assetLimit + "억원 이하</strong>)을 충족합니다.<br>" +
+                "다만 I유형(구직촉진수당)은 <strong>선발형</strong>으로, <strong>점수 산정 및 기준점수(예산·지원현황에 따라 변동)</strong>을 통과해야 최종 선정됩니다.";
+            document.getElementById('res_tip').innerText =
+                (warn.length ? ("주의: " + warn.join(" / ")) : "TIP: 소득·재산 외에도 미취업기간, 취업준비기간, 부양가족, 참여이력 등으로 점수가 산정될 수 있습니다.");
+        } else if (eligibleType2) {
+            resBox.className = 'result-box res-warning';
+            let subtype = "";
+            if (isSpec) subtype = "특정계층";
+            else if (isYouth) subtype = "청년";
+            else subtype = "중장년";
+
+            document.getElementById('res_title').innerText = "✅ II유형 신청 가능";
+            if (subtype === "중장년") {
+                document.getElementById('res_desc').innerHTML =
+                    "중장년(35~69세)이며 중위소득 <strong>100% 이하</strong> 요건을 충족합니다.<br>" +
+                    "구직활동 계획 이수에 따라 <strong>취업활동비용</strong> 및 <strong>취업지원서비스</strong>를 받을 수 있습니다.";
+            } else {
+                document.getElementById('res_desc').innerHTML =
+                    "II유형 <strong>" + subtype + "</strong>에 해당할 가능성이 있습니다.<br>" +
+                    "구직활동 계획 이수에 따라 <strong>취업활동비용</strong> 및 <strong>취업지원서비스</strong>를 받을 수 있습니다.";
+            }
+            document.getElementById('res_tip').innerText =
+                (warn.length ? ("주의: " + warn.join(" / ")) : "TIP: II유형은 참여·이수(상담/훈련/일경험 등) 여부에 따라 비용 지원이 이뤄집니다.");
+        } else {
+            resBox.className = 'result-box res-fail';
+            document.getElementById('res_title').innerText = "🚫 지원 대상 아님";
+            document.getElementById('res_desc').innerHTML = "현재 입력하신 기준으로는 I유형·II유형 요건에 해당하지 않습니다.";
+            document.getElementById('res_tip').innerText =
+                (warn.length ? ("참고: " + warn.join(" / ")) : "혹시 빠뜨린 '특정계층' 항목이 없는지 확인해보세요.");
+        }
+
+        
+        // ✅ 결과 상단 경고 배너(학적/확인사항) 레벨링
+        let bannerLevel = 'warn-info';
+        let bannerTitle = warn.length ? 'ℹ️ 추가 확인' : 'ℹ️ 안내';
+        let showFaqBtn = false;
+        let showExclBtn = false;
+
+        if (isStudent) { bannerLevel = 'warn-student'; bannerTitle = '⚠️ 재학생/휴학생 확인'; showFaqBtn = true; showExclBtn = true; }
+        else if (isGradExpected) { bannerLevel = 'warn-expected'; bannerTitle = '⚠️ 졸업예정자 증빙 확인'; showFaqBtn = true; showExclBtn = true; }
+        else if (isAltAllowedStudy) { bannerLevel = 'warn-info'; bannerTitle = 'ℹ️ 학업 병행 유형 확인'; showFaqBtn = true; showExclBtn = true; }
+
+        setResultWarnBanner(warn, bannerLevel, bannerTitle, showFaqBtn, showExclBtn);
+
+
+        const eligibleOverall = (eligibleType1Base || eligibleType2);
+        if (eligibleOverall) {
+            renderCenterToResult(buildAddr(city, gu, dong));
+        } else {
+            renderCenterToResult("");
+        }
+    }
+
+    
+    function resetCalculator() {
+        // 자격 판정기 입력값 초기화 + 결과 영역 숨김
+        const scope = document.getElementById('calculator');
+        if (scope) {
+            scope.querySelectorAll('input, select, textarea').forEach(el => {
+                const t = (el.type || '').toLowerCase();
+                if (t === 'checkbox' || t === 'radio') {
+                    el.checked = false;
+                } else if (el.tagName === 'SELECT') {
+                    el.selectedIndex = 0;
+                } else {
+                    el.value = '';
+                }
+                // 일부 커스텀 UI(있는 경우)
+                el.dispatchEvent(new Event('change', { bubbles: true }));
+                el.dispatchEvent(new Event('input', { bubbles: true }));
+            });
+        }
+
+        // 결과/센터 영역 숨김
+        const resBox = document.getElementById('result_area');
+        if (resBox) resBox.style.display = 'none';
+        const centerWrap = document.getElementById('res_center');
+        if (centerWrap) centerWrap.style.display = 'none';
+    }
+
+function buildAddr(city, gu, dong) {
+        return (city + " " + gu + " " + dong).trim();
+    }
+
+    
+    // 생활권 기준 센터 매핑 (지사찾기 / 판정결과 공통)
+    // 우선순위: (1) 동/읍면 생활권 예외 → (2) 구/군 명시 → (3) 울주군 읍면 분기 → (4) 키워드 추정
+    function getNearestCenterByAddr(addrRaw) {
+        const raw = (addrRaw || "").toString();
+        const addr = raw
+            .replace(/\s+/g, "")
+            .replace(/[.,()\-]/g, "");
+        if (!addr) return null;
+
+        const has = (k) => addr.includes(k);
+
+        // 센터 정보 (표기용)
+
+        const CENTER = {
+            namgu:  { name: "남구센터",  addr: "울산 남구 수암로 5, 로타리빌딩",               tel: "052-966-5001", q: "울산 남구 수암로 5",                   kakao: "http://pf.kakao.com/_xlQyxcxj/chat" },
+            dongbu: { name: "동구센터",  addr: "울산 동구 방어진순환도로 678, 3층",            tel: "052-966-3500", q: "울산 동구 방어진순환도로 678",          kakao: "http://pf.kakao.com/_xlQyxcxj/chat" },
+            bukbu:  { name: "북부센터",  addr: "울산 북구 송내4길 14, 2층",                    tel: "052-913-3500", q: "울산 북구 송내4길 14",                 kakao: "http://pf.kakao.com/_xlQyxcxj/chat" },
+            seobu:  { name: "서부센터",  addr: "울산 울주군 범서읍 굴화1길 60",                tel: "052-915-3500", q: "울산 울주군 범서읍 굴화1길 60",         kakao: "http://pf.kakao.com/_xlQyxcxj/chat" }
+        };
+
+        // === 매핑표(생활권 기준) ===
+        const LIFEZONE_MAPPING = {
+            // 동/읍면 기반 생활권 예외 (최우선)
+            override: {
+                // 서부센터: 남구 서측 생활권 + 울주 서부/언양권 (구/군 표기가 없더라도 잡히게)
+                seobu: ["무거","옥동","신복","다운",
+                        "구영","천상","굴화","장검","범서","언양","삼남","삼동","상북","두동","두서","웅촌"],
+                // 남구센터: 남구 도심권 + 울주 온산/서생/덕하권
+                namgu: ["삼산","달동","신정","야음","선암","수암","대현","여천","두왕","장생포",
+                        "온산","온양","서생","덕하","청량"]
+            },
+
+            // ✅ 중구는 생활권으로 세분화 (남구/북부/서부)
+            // - 북부권: 병영/약사/성안/반구 일대는 북구권(농소/효문/양정 축) 접근성이 좋은 편
+            // - 남구권: 태화/우정/학성/성남/중앙/복산/교동 일대는 남구 도심권(삼산/신정 축) 접근성이 좋은 편
+            junggu: {
+                bukbu: ["병영","약사","성안","반구"],
+                namgu: ["태화","우정","학성","성남","중앙","복산","교동"],
+                seobu: ["다운"] // 중구에서 서부로 고정할 동이 있으면 여기에 추가
+            },
+
+            // 구/군이 명시된 경우 기본 매핑 (단, 중구는 위 생활권 분기가 우선 적용됨)
+            district: {
+                "북구": "bukbu",
+                "동구": "dongbu",
+                "중구": "namgu",
+                "남구": "namgu"
+            },
+
+            // 울주군은 읍/면 생활권으로 분기
+            ulju: {
+                seobu: ["범서","언양","삼남","삼동","상북","두동","두서","웅촌","구영","천상","굴화","장검"],
+                namgu: ["온산","온양","서생","청량","덕하"]
+            },
+
+            // 구/군이 없을 때 키워드로 추정
+            keywords: {
+                bukbu:  ["농소","화봉","송정","효문","양정","염포","매곡","호계","신천","중산","명촌","진장","연암","상안","천곡","달천","강동",
+                         "병영","약사","성안","반구"],
+                dongbu: ["방어","화정","일산","대송","전하","남목","주전","미포"],
+                seobu:  ["무거","옥동","신복","다운",
+                         "구영","천상","굴화","장검","범서","언양","삼남","삼동","상북","두동","두서","웅촌"],
+                namgu:  ["삼산","신정","달동","야음","선암","여천","두왕","수암","대현","삼호","용연","장생포","황성","이현",
+                         "온산","온양","서생","덕하","청량",
+                         "태화","우정","학성","성남","중앙","복산","교동"]
+            }
+        };
+
+// 1) 동/읍면 생활권 예외 (최우선) — 단, 북구/동구 명시 시는 행정구 우선
+        if (has("북구")) return CENTER.bukbu;
+        if (has("동구")) return CENTER.dongbu;
+
+
+        // ✅ 중구 생활권 분기 (지사찾기/판정결과 공통)
+        // 중구 표기가 있거나(또는 중구 동 키워드가 들어오면) 생활권 키워드를 우선 적용
+        if (LIFEZONE_MAPPING.junggu) {
+            if (LIFEZONE_MAPPING.junggu.seobu && LIFEZONE_MAPPING.junggu.seobu.some(k => has(k))) return CENTER.seobu;
+            if (LIFEZONE_MAPPING.junggu.bukbu.some(k => has(k))) return CENTER.bukbu;
+            if (LIFEZONE_MAPPING.junggu.namgu.some(k => has(k))) return CENTER.namgu;
+            // 중구로만 들어오고 동 정보가 없을 때는 남구권을 기본값으로 둠(도심 접근성)
+            if (has("중구")) return CENTER.namgu;
+        }
+        if (LIFEZONE_MAPPING.override.seobu.some(k => has(k))) return CENTER.seobu;
+        if (LIFEZONE_MAPPING.override.namgu.some(k => has(k))) return CENTER.namgu;
+
+        // 2) 구/군 명시 매칭
+        for (const key in LIFEZONE_MAPPING.district) {
+            if (has(key)) return CENTER[LIFEZONE_MAPPING.district[key]];
+        }
+
+        // 3) 울주군 분기
+        if (has("울주") || has("울주군")) {
+            if (LIFEZONE_MAPPING.ulju.namgu.some(k => has(k))) return CENTER.namgu;
+            if (LIFEZONE_MAPPING.ulju.seobu.some(k => has(k))) return CENTER.seobu;
+            return CENTER.seobu; // 읍면 정보 없으면 서부 기본
+        }
+
+        // 4) 키워드 추정
+        if (LIFEZONE_MAPPING.keywords.bukbu.some(k => has(k))) return CENTER.bukbu;
+        if (LIFEZONE_MAPPING.keywords.dongbu.some(k => has(k))) return CENTER.dongbu;
+        if (LIFEZONE_MAPPING.keywords.seobu.some(k => has(k))) return CENTER.seobu;
+        if (LIFEZONE_MAPPING.keywords.namgu.some(k => has(k))) return CENTER.namgu;
+
+        return null;
+    }
+
+
+
+    function renderCenterToResult(addrRaw) {
+        const wrap = document.getElementById('res_center');
+        const body = document.getElementById('res_center_body');
+        if (!wrap || !body) return;
+
+        const b = getNearestCenterByAddr(addrRaw);
+
+        if (!addrRaw || !b) {
+            wrap.style.display = 'none';
+            body.innerHTML = '';
+            return;
+        }
+
+        wrap.style.display = 'block';
+        body.innerHTML =
+            "<div><strong>(주)좋은일자리 " + b.name + "</strong></div>" +
+            "<div>주소: " + b.addr + "</div>" +
+            "<div>문의: " + b.tel + "</div>" +
+            "<div style='margin-top:8px; display:flex; gap:10px; flex-wrap:wrap;'>" +
+            "<a class='btn btn-small' href='https://map.kakao.com/link/search/" + encodeURIComponent(b.q) + "' target='_blank' rel='noopener'>지도 보기</a>" +
+            "<a class='btn btn-small btn-kakao' href='" + b.kakao + "' target='_blank' rel='noopener'>카카오채널 채팅</a>" +
+            "<a class='btn btn-small btn-outline' href='https://www.ulsan1.kr/busi/busi05.php#form' target='_blank' rel='noopener'>온라인 상담 신청</a>" +
+            "</div>";
+    }
+
+
+    
+    // ===== Modal helpers (특정계층 제출서류/확인방법 등) =====
+    function openModal(id) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.style.display = 'flex';
+    }
+    function closeModal(id) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.style.display = 'none';
+    }
+
+function handleEnter(e) { if(e.key === 'Enter') findBranch(); }
+
+    function findBranch() {
+        const raw = document.getElementById('ulsan_addr').value.trim();
+        if (!raw) { alert("동(읍/면) 이름을 입력해주세요."); return; }
+
+        const b = getNearestCenterByAddr(raw);
+        if (!b) { alert("주소를 다시 확인해주세요."); return; }
+
+        document.getElementById('branch_result').style.display = 'block';
+        document.getElementById('branch_name').innerText = "(주)좋은일자리 " + b.name;
+        // 관할/지역 문구 제거 요청 반영: 설명은 표시하지 않음
+        const descEl = document.getElementById('branch_desc');
+        if (descEl) { descEl.innerText = ""; descEl.style.display = 'none'; }
+        document.getElementById('branch_addr').innerText = "주소: " + b.addr;
+        document.getElementById('branch_tel').innerText = "문의: " + b.tel;
+        document.querySelector('.map-link').href = "https://map.kakao.com/link/search/" + encodeURIComponent(b.q);
+        document.querySelector('.kakao-link').href = b.kakao;
+    }
+
+
+    
+    // 거주지 선택(도시/구·군/동·읍·면) 드롭다운 초기화
+    const ADDR_GU_OPTIONS = ["중구","남구","북구","동구","울주군"];
+    const ADDR_DONG_BY_GU = {
+        "중구": ["다운동","태화동","우정동","학성동","성남동","중앙동","복산동","교동","반구1동","반구2동","병영1동","병영2동","약사동","성안동"],
+        "남구": ["무거동","옥동","삼산동","달동","신정1동","신정2동","신정3동","신정4동","신정5동","대현동","수암동","야음장생포동","선암동"],
+        "북구": ["농소1동","농소2동","농소3동","강동동","효문동","송정동","양정동","염포동"],
+        "동구": ["방어동","일산동","화정동","대송동","전하1동","전하2동","남목1동","남목2동","남목3동"],
+        "울주군": ["범서읍","언양읍","온산읍","온양읍","청량읍","삼남읍","삼동면","상북면","서생면","웅촌면","두동면","두서면"]
+    };
+
+    function setSelectOptions(sel, options, placeholderText) {
+        if (!sel) return;
+        sel.innerHTML = "";
+        const ph = document.createElement("option");
+        ph.value = "";
+        ph.textContent = placeholderText || "선택";
+        sel.appendChild(ph);
+        (options || []).forEach(v => {
+            const opt = document.createElement("option");
+            opt.value = v;
+            opt.textContent = v;
+            sel.appendChild(opt);
+        });
+    }
+
+    function initAddressSelects() {
+        const citySel = document.getElementById("addr_city");
+        const guSel = document.getElementById("addr_gu");
+        const dongSel = document.getElementById("addr_dong");
+        if (!citySel || !guSel || !dongSel) return;
+
+        // 도시: 울산 고정(선택형이지만 입력은 막기 위해 1개 옵션만 제공)
+        citySel.innerHTML = '<option value="울산광역시">울산광역시</option>';
+
+        // 구·군 / 동·읍·면
+        setSelectOptions(guSel, ADDR_GU_OPTIONS, "구·군 선택");
+        setSelectOptions(dongSel, [], "동·읍·면 선택");
+
+        const updateDong = () => {
+            const gu = (guSel.value || "").trim();
+            const list = ADDR_DONG_BY_GU[gu] || [];
+            setSelectOptions(dongSel, list, "동·읍·면 선택");
+        };
+
+        guSel.addEventListener("change", updateDong);
+        updateDong();
+    }
+
+
+
+    function ymd(d){
+        const y = d.getFullYear();
+        const m = String(d.getMonth()+1).padStart(2,'0');
+        const day = String(d.getDate()).padStart(2,'0');
+        return `${y}-${m}-${day}`;
+    }
+
+    function computeGradParticipationStartDate(gradYear, gradMonth, isMedical){
+        if (!gradYear || gradYear < 2000) return null;
+        if (gradMonth === 'feb'){
+            // 일반: 전년도 7/1, 의학계열: 해당연도 1/1
+            return isMedical ? new Date(gradYear, 0, 1) : new Date(gradYear-1, 6, 1);
+        }
+        if (gradMonth === 'aug'){
+            // 일반: 해당연도 1/1, 의학계열: 해당연도 7/1
+            return isMedical ? new Date(gradYear, 6, 1) : new Date(gradYear, 0, 1);
+        }
+        return null;
+    }
+
+    function resolveGradYearSelection(selValue){
+        const today = new Date();
+        const y = today.getFullYear();
+        if (selValue === 'THIS_YEAR') return y;
+        if (selValue === 'NEXT_YEAR') return y + 1;
+
+        // 자동: 2월 선택이면 기본 올해, 그 외도 올해
+        return y;
+    }
+
+    function updateEduDetailsUI(){
+        const edu = (document.getElementById('edu_status') || {}).value || "unknown";
+        const wrap = document.getElementById('grad_expected_wrap');
+        if (!wrap) return;
+        wrap.style.display = (edu === 'uni_expected') ? 'block' : 'none';
+    }
+
+
+// 초기 로딩 시 소득 구간 옵션 표시
+    document.addEventListener('DOMContentLoaded', () => {
+        try { updateIncomeOptions(); } catch (e) {}
+        try { initAddressSelects(); } catch (e) {}
+        try { const eduSel = document.getElementById('edu_status'); if (eduSel) { eduSel.addEventListener('change', updateEduDetailsUI); } updateEduDetailsUI(); } catch (e) {}
+        // modal overlay: click outside to close
+        document.querySelectorAll('.modal-overlay').forEach(ov => {
+            ov.addEventListener('click', (e) => {
+                if (e.target === ov) ov.style.display = 'none';
+            });
+        });
+    });
+
+</script>
+</body>
+</html>

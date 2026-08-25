@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>채용공고 통합 상담 도구 | 좋은일자리</title>
+<style>
+:root{--brand:#004e92;--brand2:#003d73;--bg:#f4f6f9;--card:#fff;--line:#e5e9ef;--text:#182230;--muted:#667085;--ok:#157347;--okbg:#e9f7ef;--warn:#9a6700;--warnbg:#fff7db;--bad:#b42318;--badbg:#fff0ee;--info:#175cd3;--infobg:#eff6ff}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:Pretendard,"Noto Sans KR","Malgun Gothic",system-ui,sans-serif;color:var(--text);line-height:1.55}.top{background:linear-gradient(135deg,#002b50,var(--brand));color:#fff;padding:28px 20px}.topin{max-width:1120px;margin:auto}.top h1{margin:0 0 7px;font-size:28px;letter-spacing:-.7px}.top p{margin:0;color:#d9ecff}.wrap{max-width:1120px;margin:22px auto 50px;padding:0 16px}.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:24px;margin-bottom:18px;box-shadow:0 8px 25px rgba(24,34,48,.05)}.card h2{font-size:20px;margin:0 0 18px;color:var(--brand)}.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.full{grid-column:1/-1}.field label{display:block;font-weight:750;margin:0 0 7px}.field input,.field select{width:100%;padding:13px 14px;border:1px solid #cfd6df;border-radius:10px;background:#fff;font-size:15px;outline:0}.field input:focus,.field select:focus{border-color:var(--brand);box-shadow:0 0 0 3px rgba(0,78,146,.1)}.hint{font-size:13px;color:var(--muted);margin-top:7px}.privacy{padding:13px 15px;border-radius:11px;background:#fff8e8;border:1px solid #f5d58b;color:#6d5315;font-size:14px;margin-top:14px}.actions{display:flex;gap:10px;margin-top:20px}.btn{border:0;border-radius:11px;padding:14px 18px;font-weight:800;font-size:16px;cursor:pointer}.primary{background:var(--brand);color:#fff;flex:1}.primary:hover{background:var(--brand2)}.secondary{background:#eef2f6;color:#344054}.btn:disabled{opacity:.55;cursor:not-allowed}.loading{display:none;text-align:center;padding:28px;color:var(--brand);font-weight:750}.spinner{display:inline-block;width:20px;height:20px;border:3px solid #dbe7f2;border-top-color:var(--brand);border-radius:50%;animation:spin .8s linear infinite;vertical-align:-4px;margin-right:8px}@keyframes spin{to{transform:rotate(360deg)}}#results{display:none}.summary-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.mini{border:1px solid var(--line);border-radius:13px;padding:14px;background:#fbfcfe}.mini b{display:block;font-size:12px;color:var(--muted);margin-bottom:5px}.mini span{font-weight:700}.check{display:flex;gap:12px;padding:13px 0;border-bottom:1px solid #edf0f3}.check:last-child{border-bottom:0}.badge{flex:0 0 auto;height:27px;padding:3px 9px;border-radius:20px;font-size:12px;font-weight:800}.met,.within_preference,.matched_listed,.matched_preference{background:var(--okbg);color:var(--ok)}.gap,.outside_preference{background:var(--badbg);color:var(--bad)}.unknown,.checkstatus{background:var(--warnbg);color:var(--warn)}.not_listed{background:var(--infobg);color:var(--info)}.check-main{min-width:0}.check-main strong{display:block}.check-main small{color:var(--muted)}.section-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}.section-head h2{margin:0}.copy{border:1px solid #cfd6df;background:#fff;color:#344054;border-radius:9px;padding:8px 11px;font-weight:700;cursor:pointer}.textout{white-space:pre-wrap;background:#f8fafc;border:1px solid var(--line);border-radius:12px;padding:16px;font-size:14px;overflow-wrap:anywhere}.chips{display:flex;flex-wrap:wrap;gap:8px}.chip{padding:7px 10px;border-radius:999px;background:#eaf3fb;color:#164e7a;font-size:13px;font-weight:750}.list{margin:0;padding-left:21px}.list li{margin:8px 0}.error{display:none;background:#fff0ee;border:1px solid #f5b7b1;color:#912018;border-radius:12px;padding:15px;margin-bottom:18px}.source-link{display:inline-block;margin-top:12px;color:var(--brand);font-weight:700;text-decoration:none}.source-link:hover{text-decoration:underline}.footer-note{font-size:13px;color:var(--muted);text-align:center;margin-top:24px}.statusline{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 0}.module{font-size:12px;padding:5px 8px;border-radius:999px;background:#eef2f6;color:#475467}.module.on{background:var(--okbg);color:var(--ok)}
+@media(max-width:760px){.top h1{font-size:23px}.grid,.summary-grid{grid-template-columns:1fr}.card{padding:18px}.actions{flex-direction:column}.secondary{width:100%}}
+</style>
+</head>
+<body>
+<header class="top"><div class="topin"><h1>📋 채용공고 통합 상담 도구</h1><p>고용24 공고 하나로 공고요약 → 조건비교 → 안내문·상담일지 → 지원준비까지 한 번에 확인합니다.</p></div></header>
+<main class="wrap">
+  <section class="card">
+    <h2>1. 공고와 내담자 기본조건</h2>
+    <div class="grid">
+      <div class="field full"><label for="posting">고용24 공고 링크 또는 구인인증번호 *</label><input id="posting" placeholder="예: https://www.work24.go.kr/...wantedAuthNo=... 또는 KEC..."><div class="hint">링크를 통째로 붙이면 구인인증번호를 자동으로 찾습니다.</div></div>
+      <div class="field"><label for="education">학력</label><select id="education"><option value="">선택 안 함</option><option>중졸</option><option>고졸</option><option>전문대졸</option><option>대졸</option><option>석사</option><option>박사</option></select></div>
+      <div class="field"><label for="careerYears">관련 경력연수</label><input id="careerYears" type="number" min="0" step="0.5" placeholder="예: 2"></div>
+      <div class="field"><label for="certificates">보유 자격증</label><input id="certificates" placeholder="예: 전기기능사, 지게차운전기능사"><div class="hint">쉼표로 여러 개 입력</div></div>
+      <div class="field"><label for="major">전공</label><input id="major" placeholder="예: 전기과"></div>
+      <div class="field"><label for="originAddress">통근 출발지</label><input id="originAddress" placeholder="예: 울산시청, 울산 북구 호계동"></div>
+      <div class="field"><label for="commute">희망 통근시간</label><input id="commute" type="number" min="1" max="300" placeholder="예: 40 (분)"></div>
+      <div class="field full"><label for="employmentType">희망 고용형태</label><input id="employmentType" placeholder="예: 기간의 정함이 없는 근로계약"></div>
+    </div>
+    <div class="privacy">🔒 통근 출발지는 저장하지 않습니다. 정확한 자택주소보다 <strong>동 단위 또는 가까운 공공장소</strong>를 사용하는 것을 권장합니다.</div>
+    <div class="actions"><button id="run" class="btn primary">전체 상담자료 생성</button><button id="reset" class="btn secondary">초기화</button></div>
+  </section>
+
+  <div id="error" class="error"></div>
+  <div id="loading" class="loading"><span class="spinner"></span>공고·기업·통근·직무정보를 확인하고 있습니다. 잠시만 기다려 주세요.</div>
+
+  <div id="results">
+    <section class="card"><div class="section-head"><h2>2. 공고 핵심요약</h2></div><div id="postingTitle" style="font-size:19px;font-weight:850;margin-bottom:4px"></div><div id="postingCompany" style="color:var(--muted);margin-bottom:15px"></div><div id="quick" class="summary-grid"></div><div id="modules" class="statusline"></div><a id="sourceLink" class="source-link" target="_blank" rel="noopener">고용24 원문 열기 ↗</a></section>
+
+    <section class="card"><div class="section-head"><h2>3. 공고 명시조건 비교</h2></div><div id="checks"></div></section>
+
+    <section class="card"><div class="section-head"><h2>4. 내담자 채용정보 안내문</h2><button class="copy" data-copy="message">복사</button></div><div id="message" class="textout"></div></section>
+    <section class="card"><div class="section-head"><h2>5. 알선·추천 사유 초안</h2><button class="copy" data-copy="referral">복사</button></div><div id="referral" class="textout"></div></section>
+    <section class="card"><div class="section-head"><h2>6. 상담일지 초안</h2><button class="copy" data-copy="log">복사</button></div><div id="log" class="textout"></div></section>
+
+    <section class="card"><div class="section-head"><h2>7. 지원 전 확인사항</h2></div><ul id="before" class="list"></ul></section>
+    <section class="card"><div class="section-head"><h2>8. 이력서 핵심 키워드</h2></div><div id="keywords" class="chips"></div><h3 style="font-size:16px;margin:20px 0 8px">경력·경험 정리 포인트</h3><ul id="evidence" class="list"></ul></section>
+    <section class="card"><div class="section-head"><h2>9. 자기소개서 작성 포인트</h2></div><ul id="selfintro" class="list"></ul></section>
+    <section class="card"><div class="section-head"><h2>10. 예상 면접질문</h2></div><ul id="interview" class="list"></ul></section>
+    <section class="card"><div class="section-head"><h2>11. 제출서류 체크</h2></div><ul id="documents" class="list"></ul></section>
+  </div>
+  <div class="footer-note">공공데이터 기반 상담 보조도구입니다. 최종 지원조건은 반드시 고용24 원문에서 확인하고, 생성된 문구는 상담사가 검토 후 사용하세요.</div>
+</main>
+<script>
+const API='https://bowxlaiyjxknqccoughl.supabase.co/functions/v1/counselor-ai-hub/job-workflow';
+const $=id=>document.getElementById(id);
+function val(id){return $(id).value.trim()}
+function extractWantedAuthNo(v){v=(v||'').trim();if(!v)return'';try{const u=new URL(v);const q=u.searchParams.get('wantedAuthNo');if(q)return q.trim()}catch{}const m=v.match(/wantedAuthNo=([A-Za-z0-9_-]+)/i);if(m)return m[1];if(/^[A-Za-z0-9_-]{8,40}$/.test(v))return v;return''}
+function splitList(v){return [...new Set((v||'').split(/[,;/|\n]+/).map(x=>x.trim()).filter(Boolean))]}
+function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function mini(label,value){return `<div class="mini"><b>${esc(label)}</b><span>${esc(value||'미확인')}</span></div>`}
+function li(list){return (list||[]).map(x=>`<li>${esc(x)}</li>`).join('')||'<li>표시할 정보 없음</li>'}
+const statusKo={met:'충족',gap:'차이 있음',unknown:'확인 필요',check:'확인 필요',not_listed:'공고상 필수표시 없음',within_preference:'희망범위 내',outside_preference:'희망범위 초과',matched_listed:'목록 일치',matched_preference:'희망 일치'};
+const fieldKo={education:'학력',career:'경력',certificate:'자격증',major:'전공',commute:'통근시간',employmentType:'고용형태'};
+function showError(msg){$('error').textContent=msg;$('error').style.display='block'}
+function clearError(){$('error').style.display='none';$('error').textContent=''}
+function render(d){
+ const p=d.posting||{},q=d.quickView||{},c=d.comparison||{},o=d.counselOutput||{},a=d.applicationPrep||{};
+ $('postingTitle').textContent=p.title||'공고 제목 미확인';$('postingCompany').textContent=[p.company,p.workplace].filter(Boolean).join(' · ');
+ const commute=q.commute?`${q.commute.distanceKm??'-'}km / 자동차 약 ${q.commute.durationMinutes??'-'}분`:'';
+ $('quick').innerHTML=[mini('학력',q.education),mini('경력',q.career),mini('급여',String(q.pay||'').replace(/^급\s*여\s*:\s*/i,'')),mini('고용형태',q.employmentType),mini('근무시간',q.workHours),mini('복리후생',q.welfare),mini('마감',q.deadline?.text),mini('통근',commute)].join('');
+ const ms=d.moduleStatus||{};$('modules').innerHTML=Object.entries({공고요약:ms.brief,조건비교:ms.comparison,상담문구:ms.counselOutput,지원준비:ms.applicationPrep}).map(([k,v])=>`<span class="module ${v?'on':''}">${k} ${v?'✓':'-'}</span>`).join('');
+ $('sourceLink').href=p.url||'#';$('sourceLink').style.display=p.url?'inline-block':'none';
+ $('checks').innerHTML=(c.checks||[]).map(x=>{const cls=x.status==='check'?'checkstatus':x.status;const candidate=Array.isArray(x.candidate)?x.candidate.join(', '):(x.candidate??'미입력');const required=Array.isArray(x.required)?x.required.join(', '):(x.required??'해당없음');return `<div class="check"><span class="badge ${esc(cls)}">${esc(statusKo[x.status]||x.status)}</span><div class="check-main"><strong>${esc(fieldKo[x.field]||x.field)}</strong><div>공고: ${esc(required)} / 내담자: ${esc(candidate)}</div><small>${esc(x.reason||'')}</small></div></div>`}).join('')||'<div class="hint">비교 가능한 내담자 정보가 없거나 공고 조건을 구조화하지 못했습니다.</div>';
+ $('message').textContent=o.jobInfoMessage||'생성되지 않음';$('referral').textContent=o.referralReason||'생성되지 않음';$('log').textContent=o.counselingLog||'생성되지 않음';$('before').innerHTML=li(o.beforeSendChecks);
+ $('keywords').innerHTML=(a.resumeKeywords||[]).map(x=>`<span class="chip">${esc(x)}</span>`).join('')||'<span class="hint">표시할 키워드 없음</span>';
+ $('evidence').innerHTML=li(a.resumeEvidencePrompts);$('selfintro').innerHTML=li(a.selfIntroPrompts);$('interview').innerHTML=li(a.interviewQuestions);$('documents').innerHTML=li(a.documentChecklist);
+ $('results').style.display='block';$('results').scrollIntoView({behavior:'smooth',block:'start'});
+}
+async function run(){clearError();const wantedAuthNo=extractWantedAuthNo(val('posting'));if(!wantedAuthNo){showError('고용24 공고 링크 또는 구인인증번호를 확인해 주세요.');return}
+ const body={wantedAuthNo};if(val('education'))body.candidateEducation=val('education');if(val('careerYears')!=='')body.candidateCareerYears=Number(val('careerYears'));const certs=splitList(val('certificates'));if(certs.length)body.candidateCertificates=certs;if(val('major'))body.candidateMajor=val('major');if(val('originAddress'))body.originAddress=val('originAddress');if(val('commute')!=='')body.preferredCommuteMinutes=Number(val('commute'));if(val('employmentType'))body.preferredEmploymentType=val('employmentType');
+ $('run').disabled=true;$('loading').style.display='block';$('results').style.display='none';try{const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});const raw=await r.text();let d;try{d=JSON.parse(raw)}catch{throw new Error('서버 응답을 읽지 못했습니다.')}if(!r.ok||!d.ok)throw new Error(d.error||`조회 오류 (${r.status})`);render(d)}catch(e){showError(e.message||'조회 중 오류가 발생했습니다.')}finally{$('loading').style.display='none';$('run').disabled=false}}
+$('run').addEventListener('click',run);$('posting').addEventListener('keydown',e=>{if(e.key==='Enter')run()});$('reset').addEventListener('click',()=>{document.querySelectorAll('input').forEach(x=>x.value='');document.querySelectorAll('select').forEach(x=>x.selectedIndex=0);$('results').style.display='none';clearError();window.scrollTo({top:0,behavior:'smooth'})});
+document.addEventListener('click',async e=>{const b=e.target.closest('[data-copy]');if(!b)return;const map={message:'message',referral:'referral',log:'log'};const id=map[b.dataset.copy];const text=$(id)?.textContent||'';try{await navigator.clipboard.writeText(text);const old=b.textContent;b.textContent='복사됨 ✓';setTimeout(()=>b.textContent=old,1200)}catch{alert('복사하지 못했습니다. 내용을 직접 선택해 주세요.')}});
+</script>
+</body>
+</html>
